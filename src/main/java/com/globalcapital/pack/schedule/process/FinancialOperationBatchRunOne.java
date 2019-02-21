@@ -1,27 +1,32 @@
 package com.globalcapital.pack.schedule.process;
 
 import java.io.IOException;
-import java.util.Properties;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
+import com.globalcapital.database.datasource.H2DatabaseLuncher;
 import com.globalcapital.pack.bean.BatchExecutionBean;
 import com.globalcapital.pack.engine.batchSchedule.BatchOperationCli;
+import com.globalcapital.pack.schedule.utility.ScheduleAutomationUtility;
+import com.globalcapital.pack.schedule.utility.ScheduleConstantClass;
 import com.globalcapital.utility.DateUtility;
 import com.globalcapital.utility.PropertyFileUtils;
 
+@DisallowConcurrentExecution
 public class FinancialOperationBatchRunOne implements Job {
 
 	public void execute(JobExecutionContext context) {
 		BatchExecutionBean batchBean = new BatchExecutionBean();
-
+		ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility();
 		try {
 
 			PropertyFileUtils prop1 = new PropertyFileUtils("reportBatch.properties");
 			batchBean.setPath(prop1.loadProperties().getProperty("solife.batch.console"));
 			batchBean.setUsername((prop1.loadProperties().getProperty("solife.batch.username")));
 			batchBean.setBatchType("FIN_OP");
+			batchBean.setBatchJoId("financialBatchOne");
 			// System.out.println("@@@@@@@@@@@@@@@@@@@@@@ Number of running processes are "+
 			// genericService.findAllRuningQueries().size());
 			batchBean.setJndiServer(prop1.loadProperties().getProperty("solife.jndi.url"));
@@ -33,6 +38,15 @@ public class FinancialOperationBatchRunOne implements Job {
 			BatchOperationCli batchOperationCli = new BatchOperationCli();
 			System.out.println("~~~~~~~~Date Utility Class~~~~~~~~~~~~~~"+DateUtility.DateToStringReduceMonthByone());
 			batchOperationCli.startBatchCli(command);
+			H2DatabaseLuncher.executeStatementInsertAndTruncate(
+					"INSERT INTO BATCH_AUDIT (ID, BATCHTYPE_ID, LAST_RUN_DATE, NEXT_SCHDULE_DATE, BATCH_CSUCCESSFUL, BATCH_FAILED, BATCH_STARTTIME, BATCH_ENDTIME) VALUES (s.nextval,'"
+							+ ScheduleConstantClass.financialBatchOne + "','"
+							+ scheduler.getTriggerByJobGroupName(batchBean.getBatchJobId()).getPreviousFireTime()
+							+ "', '" + scheduler.getTriggerByJobGroupName(batchBean.getBatchJobId()).getNextFireTime()
+							+ "', '" + batchOperationCli.isBatchSuccessful() + "', '"
+							+ batchOperationCli.isBatchFailed() + "' , '" + BatchOperationCli.getStartTime() + "', '"
+							+ DateUtility.DateAndTimeNowToString() + "')");
+			
 		} catch (IOException e) {
 			System.out.println("Application has hit an error, see error details below");
 			e.printStackTrace();

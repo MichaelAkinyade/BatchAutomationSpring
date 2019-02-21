@@ -1,5 +1,7 @@
 package com.globalcapital.pack.schedule.cron;
 
+import java.util.Properties;
+
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -9,6 +11,8 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.stereotype.Service;
 
+import com.globalcapital.database.datasource.H2DatabaseLuncher;
+import com.globalcapital.pack.bean.BatchTypeCronTimeBean;
 import com.globalcapital.pack.schedule.process.AutoFinancedRiderOne;
 import com.globalcapital.pack.schedule.process.AutoFinancedRiderTwo;
 import com.globalcapital.pack.schedule.process.CoverageChargeBatchOne;
@@ -29,6 +33,12 @@ public class ScheduleCronTaskExecutorBatch {
 
 	public void execute() {
 
+		StdSchedulerFactory schedFactory = new StdSchedulerFactory();
+		Properties props = new Properties();
+		props.setProperty("org.quartz.jobStore.misfireThreshold", "600000");
+
+		BatchTypeCronTimeBean batchTypeCronTime = H2DatabaseLuncher.getScheduleTime();
+
 		try {
 			System.out.println("**#################- Loaded Dummy Batch Into Cron -#################");
 			// DummyBatch cron job
@@ -36,8 +46,11 @@ public class ScheduleCronTaskExecutorBatch {
 					.build();
 
 			Trigger dummyTrigger = TriggerBuilder.newTrigger().withIdentity("dummyTrigger1", "group1")
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 */5 * ? * *")).build();
-			Scheduler scheduler1 = new StdSchedulerFactory().getScheduler();
+					// using dynamic cron dates fetched from the Database
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getDummyBatchTime())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
+			Scheduler scheduler1 = schedFactory.getScheduler();
 			scheduler1.start();
 			scheduler1.scheduleJob(dummyBatchJob, dummyTrigger);
 
@@ -52,12 +65,13 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Financial Batch Run One Into Cron#################");
 
 			JobDetail financialBatchOneJob = JobBuilder.newJob(FinancialOperationBatchRunOne.class)
-					.withIdentity("financialBatchOne", "group1").build();
+					.withIdentity("financialBatchOne", "group2").build();
 
-			Trigger financialOneTrigger = TriggerBuilder.newTrigger().withIdentity("financialOneTrigger", "group1")
+			Trigger financialOneTrigger = TriggerBuilder.newTrigger().withIdentity("financialOneTrigger", "group2")
 
 					// fires at 4th every month at 6:30 PM //
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 30 18 4 * ? *")) //
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getFinancialBatchTimeOne())
+							.withMisfireHandlingInstructionDoNothing()) //
 					.build();
 			Scheduler schedulerFinancialOne = new StdSchedulerFactory().getScheduler();
 			schedulerFinancialOne.start();
@@ -74,12 +88,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Financial Batch Run two Into Cron#################");
 
 			JobDetail financialBatchTwoJob = JobBuilder.newJob(FinancialOperationBatchRunOne.class)
-					.withIdentity("financialBatchTwo", "group1").build();
+					.withIdentity("financialBatchTwo", "group2").build();
 
-			Trigger financialTwoTrigger = TriggerBuilder.newTrigger().withIdentity("financialTwoTrigger", "group1")
+			Trigger financialTwoTrigger = TriggerBuilder.newTrigger().withIdentity("financialTwoTrigger", "group2")
 
 					// fires at last day of every month at 6:30 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 30 18 ? * 6L *")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getFinancialBatchTimeTwo())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerFinancialTwo = new StdSchedulerFactory().getScheduler();
 			schedulerFinancialTwo.start();
@@ -96,12 +112,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Generic fees Batch Run one Into Cron#################");
 
 			JobDetail genericFeesBatchOneJob = JobBuilder.newJob(GenericFeesOne.class)
-					.withIdentity("genericBatchOne", "group1").build();
+					.withIdentity("genericBatchOne", "group3").build();
 
-			Trigger genericOneTrigger = TriggerBuilder.newTrigger().withIdentity("genericOneTrigger", "group1")
+			Trigger genericOneTrigger = TriggerBuilder.newTrigger().withIdentity("genericOneTrigger", "group3")
 
 					// fires at 04th every month at 7:00 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 00 19 04 * ?")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getGenericBatchTimeOne())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerGenericOne = new StdSchedulerFactory().getScheduler();
 			schedulerGenericOne.start();
@@ -118,11 +136,13 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Generic fees Batch Run two Into Cron#################");
 
 			JobDetail genericFeesBatchTwoJob = JobBuilder.newJob(GenericFeesTwo.class)
-					.withIdentity("genericBatchTwo", "group1").build();
+					.withIdentity("genericBatchTwo", "group3").build();
 
-			Trigger genericTwoTrigger = TriggerBuilder.newTrigger().withIdentity("genericTwoTrigger", "group1")
+			Trigger genericTwoTrigger = TriggerBuilder.newTrigger().withIdentity("genericTwoTrigger", "group3")
 					// fires at last day of every month at 7:00 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 00 19 ? * 6L")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getGenericBatchTimeTwo())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerGenericTwo = new StdSchedulerFactory().getScheduler();
 			schedulerGenericTwo.start();
@@ -139,12 +159,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Coverage Charge Batch Run One Into Cron#################");
 
 			JobDetail coverageChargeBatchOneJob = JobBuilder.newJob(CoverageChargeBatchOne.class)
-					.withIdentity("coverageChargeBatchOneJob", "group1").build();
+					.withIdentity("coverageChargeBatchOneJob", "group4").build();
 
 			Trigger coverageChargeOneTrigger = TriggerBuilder.newTrigger()
-					.withIdentity("coverageChargeOneTrigger", "group1")
+					.withIdentity("coverageChargeOneTrigger", "group4")
 					// fires at 04th every month at 8:00 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 00 20 04 * ?")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getCoverageBatchTimeOne())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerCoverageChrage = new StdSchedulerFactory().getScheduler();
 			schedulerCoverageChrage.start();
@@ -160,12 +182,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Coverage Charge Batch Run Two Into Cron#################");
 
 			JobDetail coverageChargeBatchTwoJob = JobBuilder.newJob(CoverageChargeBatchTwo.class)
-					.withIdentity("coverageChargeBatchTwoJob", "group1").build();
+					.withIdentity("coverageChargeBatchTwoJob", "group4").build();
 
 			Trigger coverageChargeTwoTrigger = TriggerBuilder.newTrigger()
-					.withIdentity("coverageChargeTwoTrigger", "group1")
+					.withIdentity("coverageChargeTwoTrigger", "group4")
 					// fires at 04th every month at 8:00 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 00 20 ? * 6L")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getCoverageBatchTimeTwo())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerCoverageChrage = new StdSchedulerFactory().getScheduler();
 			schedulerCoverageChrage.start();
@@ -183,12 +207,14 @@ public class ScheduleCronTaskExecutorBatch {
 					.println("**#################-Loaded Auto Finance Rider Batch Run One Into Cron#################");
 
 			JobDetail autoFinancedBatchOneJob = JobBuilder.newJob(AutoFinancedRiderOne.class)
-					.withIdentity("autoFinancedBatchOneJob", "group1").build();
+					.withIdentity("autoFinancedBatchOneJob", "group5").build();
 
 			Trigger autoFinancedOneTrigger = TriggerBuilder.newTrigger()
-					.withIdentity("autoFinancedOneTrigger", "group1")
+					.withIdentity("autoFinancedOneTrigger", "group5")
 					// fires at 04th every month at 8:00 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 45 20 04 * ?")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getAutoFinancedBatchTimeOne())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerAutoFin = new StdSchedulerFactory().getScheduler();
 			schedulerAutoFin.start();
@@ -205,12 +231,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Autofinanced  Batch Run Two Into Cron#################");
 
 			JobDetail autofinacedBatchTwoJob = JobBuilder.newJob(AutoFinancedRiderTwo.class)
-					.withIdentity("autofinacedBatchTwoJob", "group1").build();
+					.withIdentity("autofinacedBatchTwoJob", "group5").build();
 
 			Trigger autofinancedTwoTrigger = TriggerBuilder.newTrigger()
-					.withIdentity("autofinancedTwoTrigger", "group1")
+					.withIdentity("autofinancedTwoTrigger", "group5")
 					// fires at 04th every month at 8:00 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 45 20 ? * 6L")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getAutoFinancedBatchTimeTwo())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerAutofinanced = new StdSchedulerFactory().getScheduler();
 			schedulerAutofinanced.start();
@@ -228,12 +256,14 @@ public class ScheduleCronTaskExecutorBatch {
 					.println("**#################-Loaded ReschedulingBatch  Batch Run One Into Cron#################");
 
 			JobDetail reschedulingBatchOneJob = JobBuilder.newJob(ReschedulingBatchRunOne.class)
-					.withIdentity("reschedulingBatchOneJob", "group1").build();
+					.withIdentity("reschedulingBatchOneJob", "group6").build();
 
 			Trigger reschedulingOneTrigger = TriggerBuilder.newTrigger()
-					.withIdentity("reschedulingOneTrigger", "group1")
+					.withIdentity("reschedulingOneTrigger", "group6")
 					// fires at 04th every month at 10:45 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 45 22 04 * ?")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getReschedulingTimeOne())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerReschedulingOne = new StdSchedulerFactory().getScheduler();
 			schedulerReschedulingOne.start();
@@ -250,13 +280,15 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Rescheduling  Batch Run Two Into Cron#################");
 
 			JobDetail reschdulingBatchTwoJob = JobBuilder.newJob(ReschedulingBatchRunTwo.class)
-					.withIdentity("reschdulingBatchTwoJob", "group1").build();
+					.withIdentity("reschdulingBatchTwoJob", "group6").build();
 
 			Trigger reschedulingTwoTrigger = TriggerBuilder.newTrigger()
-					.withIdentity("reschedulingTwoTrigger", "group1")
+					.withIdentity("reschedulingTwoTrigger", "group6")
 
 					// fires at 04th every month at 20:45 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 45 22 ? * 6L")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getReschedulingTimeTwo())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerReschedulingTwo = new StdSchedulerFactory().getScheduler();
 			schedulerReschedulingTwo.start();
@@ -273,12 +305,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Issuing  Batch Run One Into Cron#################");
 
 			JobDetail issuingBatchOneJob = JobBuilder.newJob(IssuingBatchOne.class)
-					.withIdentity("issuingBatchOneJob", "group1").build();
+					.withIdentity("issuingBatchOneJob", "group7").build();
 
-			Trigger issuingOneTrigger = TriggerBuilder.newTrigger().withIdentity("issuingOneTrigger", "group1")
+			Trigger issuingOneTrigger = TriggerBuilder.newTrigger().withIdentity("issuingOneTrigger", "group7")
 
 					// fires at 04th every month at 11:10 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 10 23 04 * ?")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getIssuingBatchTimeOne())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerissuingOne = new StdSchedulerFactory().getScheduler();
 			schedulerissuingOne.start();
@@ -295,12 +329,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Issuing  Batch Run Two Into Cron#################");
 
 			JobDetail issuingBatchTwoJob = JobBuilder.newJob(IssuingBatchTwo.class)
-					.withIdentity("issuingBatchTwoJob", "group1").build();
+					.withIdentity("issuingBatchTwoJob", "group7").build();
 
-			Trigger issuingTwoTrigger = TriggerBuilder.newTrigger().withIdentity("issuingTwoTrigger", "group1")
+			Trigger issuingTwoTrigger = TriggerBuilder.newTrigger().withIdentity("issuingTwoTrigger", "group7")
 
 					// fires at 04th every month at 23:10 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 10 23 ? * 6L")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getIssuingBatchTimeTwo())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerissuingTwo = new StdSchedulerFactory().getScheduler();
 			schedulerissuingTwo.start();
@@ -317,12 +353,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Regular Service  Batch Run One Into Cron#################");
 
 			JobDetail regularBatchOneJob = JobBuilder.newJob(RegularServiceBatchOne.class)
-					.withIdentity("regularBatchOneJob", "group1").build();
+					.withIdentity("regularBatchOneJob", "group8").build();
 
-			Trigger regularSerOneTrigger = TriggerBuilder.newTrigger().withIdentity("regularSerOneTrigger", "group1")
+			Trigger regularSerOneTrigger = TriggerBuilder.newTrigger().withIdentity("regularSerOneTrigger", "group8")
 
 					// fires at 04th every month at 11:10 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 20 00 04 * ?")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getRegularServiceTimeOne())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerRegular = new StdSchedulerFactory().getScheduler();
 			schedulerRegular.start();
@@ -339,12 +377,14 @@ public class ScheduleCronTaskExecutorBatch {
 			System.out.println("**#################-Loaded Regular Service  Batch Run Two Into Cron#################");
 
 			JobDetail regularBatchTwoJob = JobBuilder.newJob(RegularServiceBatchRunTwo.class)
-					.withIdentity("regularBatchTwoJob", "group1").build();
+					.withIdentity("regularBatchTwoJob", "group8").build();
 
-			Trigger regularTwoTrigger = TriggerBuilder.newTrigger().withIdentity("regularTwoTrigger", "group1")
+			Trigger regularTwoTrigger = TriggerBuilder.newTrigger().withIdentity("regularTwoTrigger", "group8")
 
 					// fires at 04th every month at 12:00 PM
-					.withSchedule(CronScheduleBuilder.cronSchedule("0 20 00 ? * 6L")).build();
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getRegularServiceTimeTwo())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
 
 			Scheduler schedulerRegular = new StdSchedulerFactory().getScheduler();
 			schedulerRegular.start();

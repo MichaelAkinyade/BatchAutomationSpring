@@ -68,7 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		http.authorizeRequests().antMatchers("/resources/**", "/static/**", "/css/**","/fonts/**", "/templates/**","/images/**", "/js/**", "/vendor/**","/templates/**", "/login/**", "/", "/admin/**").permitAll().antMatchers("/login").permitAll()
 				.antMatchers("/registration", "/h2/**").permitAll()
-				.antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
+				.antMatchers("/admin/**").hasAuthority("admin").anyRequest()
 				.authenticated().and().csrf().disable().formLogin().loginPage("/login").failureUrl("/login?error=true")
 				.defaultSuccessUrl("/admin/home", true).and()
 				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/").and()

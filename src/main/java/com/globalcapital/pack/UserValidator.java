@@ -3,26 +3,18 @@
  */
 package com.globalcapital.pack;
 
-/**
- * @author Administrator
- *
- */
-
-	import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import com.globalcapital.pack.database.entity.Users;
-import com.globalcapital.pack.service.UserService;
 
 	@Component
 	public class UserValidator implements Validator {
-
-	    @Autowired
-	    private UserService userService;
-
+	/*
+	 * @Autowired private UserService userService;
+	 */
 	    
 	    @Override
 	    public boolean supports(Class<?> aClass) {

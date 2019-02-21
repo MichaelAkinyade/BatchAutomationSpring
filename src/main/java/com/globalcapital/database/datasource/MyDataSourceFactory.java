@@ -35,7 +35,7 @@ public class MyDataSourceFactory {
 		return oracleDS;
 	}
 
-	public int getRunningQuery() {
+	public static int getRunningQuery() {
 		// List<Object> result = new ArrayList<>();
 		int result = 0;
 		DataSource ds = MyDataSourceFactory.getOracleDataSource();

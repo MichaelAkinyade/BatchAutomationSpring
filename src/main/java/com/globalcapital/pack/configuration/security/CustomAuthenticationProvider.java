@@ -1,5 +1,9 @@
 package com.globalcapital.pack.configuration.security;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -8,16 +12,17 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.globalcapital.database.datasource.H2DatabaseLuncher;
+import com.globalcapital.pack.database.entity.Users;
 
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-    private static List<User> users = new ArrayList();
+    private static List<Users> users = new ArrayList();
 
     public CustomAuthenticationProvider() {
-        users.add(new User("erin", "123", "ADMIN"));
-        users.add(new User("mike", "234", "ADMIN"));
+    	
+    	users = H2DatabaseLuncher.getUsersList();
+        //users.add(new User("erin", "123", "ADMIN"));
+        //users.add(new User("mike", "234", "ADMIN"));
     }
 
     @Override
@@ -31,7 +36,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
         String password = credentials.toString();
 
-        Optional<User> userOptional = users.stream()
+        Optional<Users> userOptional = users.stream()
                                            .filter(u -> u.match(name, password))
                                            .findFirst();
 
@@ -40,7 +45,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(userOptional.get().role));
+        grantedAuthorities.add(new SimpleGrantedAuthority(userOptional.get().getRoleByd().getRoleName()));
         Authentication auth = new
                 UsernamePasswordAuthenticationToken(name, password, grantedAuthorities);
         return auth;

@@ -6,8 +6,6 @@ import com.globalcapital.database.datasource.H2DatabaseLuncher;
 
 public class Users {
 
-
-
 	private int id;
 
 	public int getId() {
@@ -45,7 +43,6 @@ public class Users {
 
 	public String getPassword() {
 
-
 		return password;
 	}
 
@@ -53,15 +50,15 @@ public class Users {
 		this.password = password;
 	}
 
-	private String firstName;
+	public String firstName;
 
-	private String lastName;
+	public String lastName;
 
-	private String userName;
+	public String userName;
 
-	private String password;
+	public String password;
 
-	private int role_id;
+	public int role_id;
 
 	public int getRole_id() {
 		return role_id;
@@ -89,14 +86,14 @@ public class Users {
 	}
 
 	private void setRoleByd(Role roleByd) {
+		List<Role> hs = H2DatabaseLuncher.listRole();
 
-		H2DatabaseLuncher hs = new H2DatabaseLuncher();
-		int counter = hs.listRole().size();
+		int counter = hs.size();
 
-		if (counter >= 0 && !(hs.listRole().isEmpty()) && getRole_id() >= 0) {
+		if (counter >= 0 && !(hs.isEmpty()) && getRole_id() >= 0) {
 			counter--;
 
-			for (Role r : hs.listRole()) {
+			for (Role r : hs) {
 				if (r.getId() == getRole_id()) {
 
 					this.roleByd = r;
@@ -119,5 +116,8 @@ public class Users {
 		Role = hs.listRole();
 	}
 
+	public boolean match(String usernamename, String password) {
+		return this.userName.equals(userName) && this.password.equals(password);
+	}
 
 }

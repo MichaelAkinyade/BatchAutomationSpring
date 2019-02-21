@@ -13,7 +13,7 @@ import com.globalcapital.pack.schedule.cron.ScheduleCronTaskExecutorBatch;
 @SpringBootApplication
 public class LoginApplication implements CommandLineRunner {
 	private static final Logger logger = LoggerFactory.getLogger(LoginApplication.class);
-	
+
 	@Autowired
 	ScheduleCronTaskExecutorBatch scheduleCronTaskExecutorBtach;
 

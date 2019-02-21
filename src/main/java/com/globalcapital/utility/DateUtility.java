@@ -16,6 +16,13 @@ public class DateUtility {
 		String strDate = dateFormat.format(date);
 		return strDate;
 	}
+	
+	public static String DateAndTimeNowToString() {
+		Date date = Calendar.getInstance().getTime();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		String strDate = dateFormat.format(date);
+		return strDate;
+	}
 
 	public static String DataParamToString(Date date) {
 		// date = Calendar.getInstance().getTime();
@@ -64,8 +71,6 @@ public class DateUtility {
 
 		return value;
 	}
-
-	
 
 	public static String fifttheenthOftheMonthString() {
 

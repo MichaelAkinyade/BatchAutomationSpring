@@ -51,6 +51,13 @@ public class BatchExecutionBean {
 	private String serverUrl;
 	private String businessError;
 	private String Path;
+	private String batchJobId;
+	public String getBatchJobId() {
+		return batchJobId;
+	}
+	public void setBatchJoId(String batchJobId) {
+		this.batchJobId = batchJobId;
+	}
 	
 	
 }
