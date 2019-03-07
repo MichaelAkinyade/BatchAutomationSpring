@@ -24,6 +24,7 @@ public class ScheduleAutomationUtility {
 		if (existingJobDetail != null) {
 			List<JobExecutionContext> currentlyExecutingJobs = (List<JobExecutionContext>) scheduler
 					.getCurrentlyExecutingJobs();
+
 			for (JobExecutionContext jec : currentlyExecutingJobs) {
 				if (existingJobDetail.equals(jec.getJobDetail())) {
 					String message = jobName + " is already running.";
@@ -128,16 +129,58 @@ public class ScheduleAutomationUtility {
 		}
 
 	}
-	
+
 	public void resumeAllTriggers() throws SchedulerException {
 		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 		scheduler.resumeAll();
 	}
-	
+
+	// Pause Single batch within the Schedular.
+	public void resumeSingleBatch(String groupNameEx) throws SchedulerException {
+		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+		try {
+			
+			for (String groupName : scheduler.getJobGroupNames()) {
+				for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+
+					if (jobKey.getName().equals(groupNameEx)) {
+						scheduler.resumeJob(jobKey);
+					}
+				}
+			}
+
+		} catch (SchedulerException e) {
+
+			e.printStackTrace();
+		}
+
+	}
 
 	public void pauseAlltriggers() throws SchedulerException {
 		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 		scheduler.pauseAll();
+	}
+
+	// Pause Single batch within the schedular.
+	// Pause Single batch within the Schedular.
+	public void pauseSingleBatch(String groupNameEx) throws SchedulerException {
+		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+		try {
+			// String groupName = "group1";
+			for (String groupName : scheduler.getJobGroupNames()) {
+				for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+
+					if (jobKey.getName().equals(groupNameEx)) {
+						scheduler.pauseJob(jobKey);
+					}
+				}
+			}
+
+		} catch (SchedulerException e) {
+
+			e.printStackTrace();
+		}
+
 	}
 
 	public int getNumberOfScheduledBatchJobs() throws SchedulerException {

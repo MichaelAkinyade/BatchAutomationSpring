@@ -13,20 +13,20 @@ import org.springframework.stereotype.Service;
 
 import com.globalcapital.database.datasource.H2DatabaseLuncher;
 import com.globalcapital.pack.bean.BatchTypeCronTimeBean;
-import com.globalcapital.pack.schedule.process.AutoFinancedRiderOne;
-import com.globalcapital.pack.schedule.process.AutoFinancedRiderTwo;
-import com.globalcapital.pack.schedule.process.CoverageChargeBatchOne;
-import com.globalcapital.pack.schedule.process.CoverageChargeBatchTwo;
-import com.globalcapital.pack.schedule.process.DummyBatchProcess;
-import com.globalcapital.pack.schedule.process.FinancialOperationBatchRunOne;
-import com.globalcapital.pack.schedule.process.GenericFeesOne;
-import com.globalcapital.pack.schedule.process.GenericFeesTwo;
-import com.globalcapital.pack.schedule.process.IssuingBatchOne;
-import com.globalcapital.pack.schedule.process.IssuingBatchTwo;
-import com.globalcapital.pack.schedule.process.RegularServiceBatchOne;
-import com.globalcapital.pack.schedule.process.RegularServiceBatchRunTwo;
-import com.globalcapital.pack.schedule.process.ReschedulingBatchRunOne;
-import com.globalcapital.pack.schedule.process.ReschedulingBatchRunTwo;
+import com.globalcapital.pack.schedule.batch.process.AutoFinancedRiderOne;
+import com.globalcapital.pack.schedule.batch.process.AutoFinancedRiderTwo;
+import com.globalcapital.pack.schedule.batch.process.CoverageChargeBatchOne;
+import com.globalcapital.pack.schedule.batch.process.CoverageChargeBatchTwo;
+import com.globalcapital.pack.schedule.batch.process.DummyBatchProcess;
+import com.globalcapital.pack.schedule.batch.process.FinancialOperationBatchRunOne;
+import com.globalcapital.pack.schedule.batch.process.GenericFeesOne;
+import com.globalcapital.pack.schedule.batch.process.GenericFeesTwo;
+import com.globalcapital.pack.schedule.batch.process.IssuingBatchOne;
+import com.globalcapital.pack.schedule.batch.process.IssuingBatchTwo;
+import com.globalcapital.pack.schedule.batch.process.RegularServiceBatchOne;
+import com.globalcapital.pack.schedule.batch.process.RegularServiceBatchRunTwo;
+import com.globalcapital.pack.schedule.batch.process.ReschedulingBatchRunOne;
+import com.globalcapital.pack.schedule.batch.process.ReschedulingBatchRunTwo;
 
 @Service
 public class ScheduleCronTaskExecutorBatch {
@@ -39,27 +39,27 @@ public class ScheduleCronTaskExecutorBatch {
 
 		BatchTypeCronTimeBean batchTypeCronTime = H2DatabaseLuncher.getScheduleTime();
 
-		try {
-			System.out.println("**#################- Loaded Dummy Batch Into Cron -#################");
-			// DummyBatch cron job
-			JobDetail dummyBatchJob = JobBuilder.newJob(DummyBatchProcess.class).withIdentity("dummyBatch", "group1")
-					.build();
-
-			Trigger dummyTrigger = TriggerBuilder.newTrigger().withIdentity("dummyTrigger1", "group1")
-					// using dynamic cron dates fetched from the Database
-					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getDummyBatchTime())
-							.withMisfireHandlingInstructionDoNothing())
-					.build();
-			Scheduler scheduler1 = schedFactory.getScheduler();
-			scheduler1.start();
-			scheduler1.scheduleJob(dummyBatchJob, dummyTrigger);
-
-		} catch (Exception e) {
-			System.out
-					.println("**#################- error in loading dummy batch process into cron --#################");
-
-			e.printStackTrace();
-		}
+		/*
+		 * try { System.out.
+		 * println("**#################- Loaded Dummy Batch Into Cron -#################"
+		 * ); // DummyBatch cron job JobDetail dummyBatchJob =
+		 * JobBuilder.newJob(DummyBatchProcess.class).withIdentity("dummyBatch",
+		 * "group1") .build();
+		 * 
+		 * Trigger dummyTrigger =
+		 * TriggerBuilder.newTrigger().withIdentity("dummyTrigger1", "group1") // using
+		 * dynamic cron dates fetched from the Database
+		 * .withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.
+		 * getDummyBatchTime()) .withMisfireHandlingInstructionDoNothing()) .build();
+		 * Scheduler scheduler1 = schedFactory.getScheduler(); scheduler1.start();
+		 * scheduler1.scheduleJob(dummyBatchJob, dummyTrigger);
+		 * 
+		 * } catch (Exception e) { System.out
+		 * .println("**#################- error in loading dummy batch process into cron --#################"
+		 * );
+		 * 
+		 * e.printStackTrace(); }
+		 */
 
 		try {
 			System.out.println("**#################-Loaded Financial Batch Run One Into Cron#################");

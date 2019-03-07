@@ -27,6 +27,34 @@ public class CheckLogFileForMessage {
 		return retVal;
 	}
 	
+	public static boolean hasReportErrorCode(String source) {
+		boolean retVal = false;
+
+		if (source != null) {
+			//String pattern = "\\b console returns 99 code \\b"; ".*console returns 99 code.*"
+			String pattern = ".*Done 11.*";
+			Pattern p = Pattern.compile(pattern);
+			Matcher m = p.matcher(source);
+			if (m.find() == true)
+				return retVal = true;
+		}
+
+		return retVal;
+	}
+	
+	public static boolean hasReportErrorCode17(String source) {
+		boolean retVal = false;
+
+		if (source != null) {
+			String pattern = ".*Done 17.*";
+			Pattern p = Pattern.compile(pattern);
+			Matcher m = p.matcher(source);
+			if (m.find() == true)
+				return retVal = true;
+		}
+
+		return retVal;
+	}
 	
 	public static boolean hasCode3(String source) {
 		boolean retVal = false;

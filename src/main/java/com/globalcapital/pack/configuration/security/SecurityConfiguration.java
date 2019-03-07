@@ -26,11 +26,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	/*
 	 * @Autowired private DataSource dataSource;
-	 */
+	 
 
 	@Value("${cron.batch.RegularServiceBatchRunTwo}")
 	private String usersQuery;
-
+*/
 	@Value("${spring.queries.roles-query}")
 	private String rolesQuery;
 	

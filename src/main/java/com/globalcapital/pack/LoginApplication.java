@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.globalcapital.pack.schedule.cron.ScheduleCronTaskExecutorBatch;
+import com.globalcapital.pack.schedule.cron.ScheduleCronTaskExecutorReport;
 
 @SpringBootApplication
 public class LoginApplication implements CommandLineRunner {
@@ -16,6 +17,9 @@ public class LoginApplication implements CommandLineRunner {
 
 	@Autowired
 	ScheduleCronTaskExecutorBatch scheduleCronTaskExecutorBtach;
+
+	@Autowired
+	ScheduleCronTaskExecutorReport scheduleCronTaskExecutorReport;
 
 	@Value("${solife.batch.console}")
 	private String props;
@@ -28,7 +32,8 @@ public class LoginApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		scheduleCronTaskExecutorBtach.execute();
+		//scheduleCronTaskExecutorBtach.execute();
+		//scheduleCronTaskExecutorReport.execute();
 
 	}
 }
