@@ -16,59 +16,68 @@ import com.globalcapital.database.datasource.H2DatabaseLuncher;
 import com.globalcapital.pack.database.entity.Users;
 
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-    private static List<Users> users = new ArrayList();
+	private static List<Users> users = new ArrayList();
 
-    public CustomAuthenticationProvider() {
-    	
-    	users = H2DatabaseLuncher.getUsersList();
-        //users.add(new User("erin", "123", "ADMIN"));
-        //users.add(new User("mike", "234", "ADMIN"));
-    }
+	PasswordEncoding passwordEncoding = new PasswordEncoding();
 
-    @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
-        String name = authentication.getName();
-        Object credentials = authentication.getCredentials();
-        System.out.println("credentials class: " + credentials.getClass());
-        if (!(credentials instanceof String)) {
-            return null;
-        }
-        String password = credentials.toString();
+	public CustomAuthenticationProvider() {
 
-        Optional<Users> userOptional = users.stream()
-                                           .filter(u -> u.match(name, password))
-                                           .findFirst();
+		users = H2DatabaseLuncher.getUsersList();
 
-        if (!userOptional.isPresent()) {
-            throw new BadCredentialsException("Authentication failed for " + name);
-        }
+	}
 
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(userOptional.get().getRoleByd().getRoleName()));
-        Authentication auth = new
-                UsernamePasswordAuthenticationToken(name, password, grantedAuthorities);
-        return auth;
-    }
+	@Override
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		String name = authentication.getName();
+		Boolean isPassWordMatch = false;
+		Boolean isCredentialMatch = false;
+		Users ourLoadedUser = new Users();
+		Object credentials = authentication.getCredentials();
+		if (!(credentials instanceof String)) {
+			return null;
+		}
+		String rawPassword = (credentials.toString());
 
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class);
-    }
+		for (Users user : users) {
 
-    private static class User {
-        private String username;
-        private String password;
-        private String role;
+			isPassWordMatch = passwordEncoding.decodePassword(user.getPassword(), rawPassword);
+			isCredentialMatch = user.getUserName().equals(name);
+			if (isPassWordMatch) {
+				ourLoadedUser = user;
+			}
 
-        public User(String username, String password, String role) {
-            this.username = username;
-            this.password = password;
-            this.role = role;
-        }
+		}
 
-        public boolean match(String usernamename, String password) {
-            return this.username.equals(username) && this.password.equals(password);
-        }
-    }
+		if (isPassWordMatch == false || isCredentialMatch==false) {
+			throw new BadCredentialsException("Authentication failed for " + name);
+		}
+
+		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+		grantedAuthorities.add(new SimpleGrantedAuthority(ourLoadedUser.getRoleByd().getRoleName()));
+		Authentication auth = new UsernamePasswordAuthenticationToken(name, ourLoadedUser.getPassword(),
+				grantedAuthorities);
+		
+		return auth;
+	}
+
+	@Override
+	public boolean supports(Class<?> authentication) {
+		return authentication.equals(UsernamePasswordAuthenticationToken.class);
+	}
+
+	private static class User {
+		private String username;
+		private String password;
+		private String role;
+
+		public User(String username, String password, String role) {
+			this.username = username;
+			this.password = password;
+			this.role = role;
+		}
+
+		public boolean match(String usernamename, String password) {
+			return this.username.equals(username) && this.password.equals(password);
+		}
+	}
 }

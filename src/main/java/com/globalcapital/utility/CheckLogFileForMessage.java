@@ -42,6 +42,23 @@ public class CheckLogFileForMessage {
 		return retVal;
 	}
 	
+	
+	
+	public static boolean hasReportErrorMessage(String source) {
+		boolean retVal = false;
+
+		if (source != null) {
+			String pattern = ".*Could not send Message.*";
+			Pattern p = Pattern.compile(pattern);
+			Matcher m = p.matcher(source);
+			if (m.find() == true)
+				return retVal = true;
+		}
+
+		return retVal;
+	}
+	
+	
 	public static boolean hasReportErrorCode17(String source) {
 		boolean retVal = false;
 
@@ -54,7 +71,21 @@ public class CheckLogFileForMessage {
 		}
 
 		return retVal;
-	}
+	} 
+	
+	public static boolean hasReportErrorConnectRefused(String source) {
+		boolean retVal = false;
+
+		if (source != null) {
+			String pattern = ".*Connection refused: connect*";
+			Pattern p = Pattern.compile(pattern);
+			Matcher m = p.matcher(source);
+			if (m.find() == true)
+				return retVal = true;
+		}
+
+		return retVal;
+	} 
 	
 	public static boolean hasCode3(String source) {
 		boolean retVal = false;

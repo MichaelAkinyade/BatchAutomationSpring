@@ -47,15 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	        .build();
 	}
 
-	//original login config
-	/*
-	 * @Override protected void configure(AuthenticationManagerBuilder auth) throws
-	 * Exception { auth.jdbcAuthentication().
-	 * usersByUsernameQuery("select u.username,u.password, r.id from user u inner join role r on (r.id=u.role_id) where u.username=?"
-	 * )//.authoritiesByUsernameQuery(rolesQuery)
-	 * .dataSource(dataSource()).passwordEncoder(bCryptPasswordEncoder); }
-	 */
-	
 	@Override
     public void configure(AuthenticationManagerBuilder auth)
             throws Exception {

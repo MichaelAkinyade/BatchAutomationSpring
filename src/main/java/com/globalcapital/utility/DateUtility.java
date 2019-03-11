@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class DateUtility {
 
@@ -52,6 +51,26 @@ public class DateUtility {
 		result.setCharAt(4, String.valueOf(reduceMonthByOne).charAt(0));
 
 		return result.toString();
+	}
+
+	public static String DateFormatToString(String dateStr) {
+		String strDate ="";
+		Long dateConvert;
+		if (Long.valueOf(dateStr) >=1) {
+			dateConvert  = Long.valueOf(dateStr);
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(dateConvert);
+		    java.util.Date utilDate = calendar.getTime();
+
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		strDate = dateFormat.format(utilDate);}
+		else {
+			
+			return "0";
+		}
+		return strDate;
+
 	}
 
 	public static String fourteenthOfMonth() {
@@ -140,6 +159,7 @@ public class DateUtility {
 
 		for (int i = 0; i < manipulateTime.length; i++) {
 
+			//Handles Hours
 			if ((manipulateTime[i].equals(":"))) {
 
 				StringBuilder b = new StringBuilder();
@@ -150,22 +170,19 @@ public class DateUtility {
 					b.append(manipulateTime[j]);
 					counter++;
 				}
-				
-				retVal[0] = b.toString().trim();
-				
-				//convert to 24 hours value
-				if (val[2].equals("PM")) {
-				
-				String twentyFourHoursValue = String.valueOf(Integer.valueOf(retVal[0].trim()) + 12);
-				retVal[0] = twentyFourHoursValue;
-				}
-				
-				
 
+				retVal[0] = b.toString().trim();
+
+				// convert to 24 hours value
+				if (val[2].equals("PM")&& Integer.valueOf(retVal[0])!=12) {
+
+					String twentyFourHoursValue = String.valueOf(Integer.valueOf(retVal[0].trim()) + 12);
+					retVal[0] = twentyFourHoursValue;
+				}
 
 			}
-			// hour
-			if (!(counter == 0) && counter >= 1 && !(manipulateTime[i].equals(":"))&& counterBoolen ==false) {
+			// minute
+			if (!(counter == 0) && counter >= 1 && !(manipulateTime[i].equals(":")) && counterBoolen == false) {
 				StringBuilder b = new StringBuilder();
 				for (counter2 = i; counter2 < manipulateTime.length; counter2++) {
 					b.append(manipulateTime[counter2]);
@@ -174,7 +191,6 @@ public class DateUtility {
 				retVal[1] = b.toString().trim();
 				counterBoolen = true;
 			}
-
 
 		}
 

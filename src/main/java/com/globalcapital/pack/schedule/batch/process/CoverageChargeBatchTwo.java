@@ -19,7 +19,7 @@ public class CoverageChargeBatchTwo implements Job {
 
 	public void execute(JobExecutionContext context) {
 		BatchExecutionBean batchBean = new BatchExecutionBean();
-		ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility();
+		ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility("batch");
 
 		try {
 
@@ -34,7 +34,7 @@ public class CoverageChargeBatchTwo implements Job {
 					+ " -parameters String:ISSUING_DATE="+DateUtility.fifteenthDayOfMonthReduceMonthByOneString() + " -u"+ batchBean.getUsername() +" -p " + batchBean.getPassword() + " -jndi.url\r\n "
 					+ batchBean.getJndiServer() + " -server.url " + batchBean.getServerUrl() + " -s ";
 			BatchOperationCli batchOperationCli = new BatchOperationCli();
-			batchOperationCli.startBatchCli(command);
+			batchOperationCli.startBatchCli(command, "coverageBatchBatchTwo");
 			H2DatabaseLuncher.executeStatementInsertAndTruncate(
 					"INSERT INTO BATCH_AUDIT (ID, BATCHTYPE_ID, LAST_RUN_DATE, NEXT_SCHDULE_DATE, BATCH_CSUCCESSFUL, BATCH_FAILED, BATCH_STARTTIME, BATCH_ENDTIME) VALUES (s.nextval,'"
 							+ ScheduleConstantClass.coverageBatchBatchTwo + "','"

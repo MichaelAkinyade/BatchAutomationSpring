@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="au theme template">
+<meta name="author" content="Michael AKinyade">
+<meta name="keywords" content="au theme template">
+
+<!-- Title Page-->
+<title>Batch Automation</title>
+
+<!-- Fontfaces CSS-->
+<link href="/css/font-face.css" rel="stylesheet" media="all">
+<link href="/vendor/font-awesome-4.7/css/font-awesome.min.css"
+	rel="stylesheet" media="all">
+<link href="/vendor/font-awesome-5/css/fontawesome-all.min.css"
+	rel="stylesheet" media="all">
+<link href="/vendor/mdi-font/css/material-design-iconic-font.min.css"
+	rel="stylesheet" media="all">
+
+<!-- Bootstrap CSS-->
+<link href="/vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet"
+	media="all">
+
+<!-- Vendor CSS-->
+<link href="/vendor/animsition/animsition.min.css" rel="stylesheet"
+	media="all">
+<link
+	href="/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css"
+	rel="stylesheet" media="all">
+<link href="/vendor/wow/animate.css" rel="stylesheet" media="all">
+<link href="/vendor/css-hamburgers/hamburgers.min.css" rel="stylesheet"
+	media="all">
+<link href="/vendor/slick/slick.css" rel="stylesheet" media="all">
+<link href="/vendor/select2/select2.min.css" rel="stylesheet"
+	media="all">
+<link href="/vendor/perfect-scrollbar/perfect-scrollbar.css"
+	rel="stylesheet" media="all">
+
+<!-- Main CSS-->
+<link href="/css/theme.css" rel="stylesheet" media="all">
+
+<link rel="stylesheet"
+	href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link
+	href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css"
+	rel="stylesheet">
+<link href="/css/editedCss.css" rel="stylesheet" media="all">
+
+
+<script type="text/javascript"
+	src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript"
+	src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script
+	src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<script
+	src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js">
+	
+</script>
+</head>
+<form th:action="@{/registration}" method="post" th:object="${registrationBean}">
+<div class="container register-form">
+            <div class="form">
+                <div class="note">
+                    <p> REGISTRATION PAGE</p>
+                </div>
+
+                <div class="form-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="First Name *" th:name="firstName"/>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="last Name *" th:name="lastName"/>
+                            </div>
+                            
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="User Name *" th:name="userName"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Your Password *" th:name="password"/>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Confirm Password *" th:name="confirmPassword"/>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btnSubmit">Submit</button>
+                </div>
+            </div>
+        </div>
+        </form>
+
+</html>

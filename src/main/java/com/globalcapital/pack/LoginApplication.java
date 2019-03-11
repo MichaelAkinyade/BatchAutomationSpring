@@ -32,8 +32,8 @@ public class LoginApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		//scheduleCronTaskExecutorBtach.execute();
-		//scheduleCronTaskExecutorReport.execute();
+		scheduleCronTaskExecutorBtach.execute();
+		scheduleCronTaskExecutorReport.execute();
 
 	}
 }

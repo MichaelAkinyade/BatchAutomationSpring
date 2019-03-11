@@ -72,7 +72,7 @@
                                 </ul>-->
                             </li>
                             <li>
-                                <a href="#">
+                                <a  th:href="@{/reportConfig}">
                                     <i class="fas fa-shopping-basket"></i>
                                     <span class="bot-line"></span> Report config </a>
                             </li>
@@ -88,7 +88,7 @@
 
                             </li>
                             <li class="has-sub">
-                                <a href="#">
+                                <a th:href="@{/emailConfig}">
                                     <i class="fas fa-desktop"></i>
                                     <span class="bot-line"></span>Email Config</a>
                                 <ul class="header3-sub-list list-unstyled">
@@ -540,7 +540,7 @@
                         </div>
                         <div class="col-md-6 col-lg-3">
                             <div class="statistic__item statistic__item--blue">
-                                <h2 class="number" style="text-align: center">0</h2>
+                                <h2 class="number" style="text-align: center" th:text="${numberReportJob}" ></h2>
                                 <span class="desc" style="text-align: center">Scheduled Report </span>
                                 <div class="icon">
                                     <i class="zmdi zmdi-calendar-note"></i>
@@ -549,8 +549,8 @@
                         </div>
                         <div class="col-md-6 col-lg-3">
                             <div class="statistic__item statistic__item--red">
-                                <h2 class="number" style="text-align: center">0</h2>
-                                <span class="desc" style="text-align: center">Next Fire Date</span>
+                                <h2 class="number" style="text-align: center">20</h2>
+                                <span class="desc" style="text-align: center">Total Scheduled</span>
                                 <div class="icon">
                                     <i class="zmdi zmdi-money"></i>
                                 </div>

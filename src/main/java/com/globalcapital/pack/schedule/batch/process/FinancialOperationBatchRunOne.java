@@ -19,7 +19,7 @@ public class FinancialOperationBatchRunOne implements Job {
 
 	public void execute(JobExecutionContext context) {
 		BatchExecutionBean batchBean = new BatchExecutionBean();
-		ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility();
+		ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility("batch");
 		try {
 
 			PropertyFileUtils prop1 = new PropertyFileUtils("reportBatch.properties");
@@ -35,8 +35,7 @@ public class FinancialOperationBatchRunOne implements Job {
 			+ " -u"+ batchBean.getUsername() +" -p " + batchBean.getPassword() + " -jndi.url\r\n "
 			+ batchBean.getJndiServer() + " -server.url " + batchBean.getServerUrl() + " -s ";
 			BatchOperationCli batchOperationCli = new BatchOperationCli();
-			System.out.println("~~~~~~~~Date Utility Class~~~~~~~~~~~~~~"+DateUtility.DateToStringReduceMonthByone());
-			batchOperationCli.startBatchCli(command);
+			batchOperationCli.startBatchCli(command, "financialBatchOne");
 			H2DatabaseLuncher.executeStatementInsertAndTruncate(
 					"INSERT INTO BATCH_AUDIT (ID, BATCHTYPE_ID, LAST_RUN_DATE, NEXT_SCHDULE_DATE, BATCH_CSUCCESSFUL, BATCH_FAILED, BATCH_STARTTIME, BATCH_ENDTIME) VALUES (s.nextval,'"
 							+ ScheduleConstantClass.financialBatchOne + "','"

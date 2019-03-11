@@ -1,8 +1,13 @@
 package com.globalcapital.pack.schedule.utility;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -13,8 +18,19 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class ScheduleAutomationUtility {
+
+	// indicator to distinguish between Report operations or Batch Operations.
+	// Values should be report or batch.
+	private String operationType;
+
+	public ScheduleAutomationUtility(String operationType) {
+		this.operationType = operationType;
+	}
 
 	public Scheduler getDetailsOfSingleScheduleJob(String jobName, String jobGroup) throws SchedulerException {
 
@@ -57,19 +73,14 @@ public class ScheduleAutomationUtility {
 
 	// Get the List of all triggers by Trigger class
 	@SuppressWarnings("unchecked")
-	public List<Trigger> getListOfTriggersAndJob() throws SchedulerException {
+	public List<Trigger> getListOfTriggersAndJob() throws SchedulerException, FileNotFoundException, IOException {
 
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+		Scheduler scheduler = getScheduleByInstanceName();
 		List<Trigger> retVal = new ArrayList<>();
 		// List all quartz jobs
 		for (String groupName : scheduler.getJobGroupNames()) {
 			for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-				String jobName = jobKey.getName();
-				String jobGroup = jobKey.getGroup();
 				retVal.add(scheduler.getTriggersOfJob(jobKey).get(0));
-				Date nextFireTime = retVal.get(0).getNextFireTime();
-				System.out.println(
-						"Job : " + jobName + ", Group : " + jobGroup + ", Next execution time : " + nextFireTime);
 			}
 
 		}
@@ -78,8 +89,9 @@ public class ScheduleAutomationUtility {
 	}
 
 	// find a specific trigger class by the job group identifier
-	public Trigger getTriggerByJobGroupName(String jobNameString) throws SchedulerException {
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+	public Trigger getTriggerByJobGroupName(String jobNameString)
+			throws SchedulerException, FileNotFoundException, IOException {
+		Scheduler scheduler = getScheduleByInstanceName();
 		Trigger trig = null;
 		// List all quartz jobs
 		for (String groupName : scheduler.getJobGroupNames()) {
@@ -96,6 +108,41 @@ public class ScheduleAutomationUtility {
 		}
 
 		return trig;
+	}
+
+	// Dynamically get scheduler class by instance name
+	public Scheduler getScheduleByInstanceName() throws FileNotFoundException, IOException, SchedulerException {
+
+		StdSchedulerFactory schedFactory = new StdSchedulerFactory();
+		String instanceId = "";
+		if (operationType.contains("report")) {
+			operationType = "reportReport";
+			instanceId = "report419";
+		} else if (operationType.contains("batch")) {
+			operationType = "batchReport";
+			instanceId = "batch419";
+		}
+
+		Resource res = new ClassPathResource("quartz.properties");
+		FileInputStream in = new FileInputStream(res.getURI().getPath());
+		Properties props = new Properties();
+		props.load(in);
+		in.close();
+
+		FileOutputStream out = new FileOutputStream(res.getURI().getPath());
+		props.setProperty("org.quartz.scheduler.instanceName", operationType);
+		props.setProperty("org.quartz.scheduler.instanceId", instanceId);
+		props.setProperty("org.quartz.threadPool.threadCount", "1");
+		props.store(out, null);
+
+		PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+		propertiesFactoryBean.setLocation(new ClassPathResource("/quartz.properties"));
+		propertiesFactoryBean.afterPropertiesSet();
+
+		schedFactory.initialize(propertiesFactoryBean.getObject());
+
+		return schedFactory.getScheduler();
+
 	}
 
 	public void resumeAllTriggersMine() throws SchedulerException {
@@ -130,16 +177,16 @@ public class ScheduleAutomationUtility {
 
 	}
 
-	public void resumeAllTriggers() throws SchedulerException {
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+	public void resumeAllTriggers() throws SchedulerException, FileNotFoundException, IOException {
+		Scheduler scheduler = getScheduleByInstanceName();
 		scheduler.resumeAll();
 	}
 
 	// Pause Single batch within the Schedular.
-	public void resumeSingleBatch(String groupNameEx) throws SchedulerException {
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+	public void resumeSingleBatch(String groupNameEx) throws SchedulerException, FileNotFoundException, IOException {
+		Scheduler scheduler = getScheduleByInstanceName();
 		try {
-			
+
 			for (String groupName : scheduler.getJobGroupNames()) {
 				for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
 
@@ -156,15 +203,15 @@ public class ScheduleAutomationUtility {
 
 	}
 
-	public void pauseAlltriggers() throws SchedulerException {
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+	public void pauseAlltriggers() throws SchedulerException, FileNotFoundException, IOException {
+		Scheduler scheduler = getScheduleByInstanceName();
 		scheduler.pauseAll();
 	}
 
 	// Pause Single batch within the schedular.
 	// Pause Single batch within the Schedular.
-	public void pauseSingleBatch(String groupNameEx) throws SchedulerException {
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+	public void pauseSingleBatch(String groupNameEx) throws SchedulerException, FileNotFoundException, IOException {
+		Scheduler scheduler = getScheduleByInstanceName();
 		try {
 			// String groupName = "group1";
 			for (String groupName : scheduler.getJobGroupNames()) {
@@ -183,9 +230,20 @@ public class ScheduleAutomationUtility {
 
 	}
 
-	public int getNumberOfScheduledBatchJobs() throws SchedulerException {
+	public int getNumberOfScheduledReportsJobs() throws SchedulerException, FileNotFoundException, IOException {
 		int retVal = 0;
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+		Scheduler scheduler = getScheduleByInstanceName();
+		retVal = scheduler.getJobGroupNames().size();
+		if (retVal < 0) {
+			retVal = 0;
+		}
+
+		return retVal;
+	}
+
+	public int getNumberOfScheduledBatchJobs() throws SchedulerException, FileNotFoundException, IOException {
+		int retVal = 0;
+		Scheduler scheduler = getScheduleByInstanceName();
 		// Subtracting 1 because we have a dummy batch job group(group 1) used for test
 		// purpose and shldnt be removed from the code
 		retVal = scheduler.getJobGroupNames().size() - 1;

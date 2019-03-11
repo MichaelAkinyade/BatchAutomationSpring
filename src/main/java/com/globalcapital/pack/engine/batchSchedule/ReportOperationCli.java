@@ -10,18 +10,18 @@ import org.quartz.SchedulerException;
 
 import com.globalcapital.database.datasource.MyDataSourceFactory;
 import com.globalcapital.pack.schedule.utility.ScheduleAutomationUtility;
+import com.globalcapital.pack.service.SendEmail;
 import com.globalcapital.utility.CheckLogFileForMessage;
 import com.globalcapital.utility.DateUtility;
 
 public class ReportOperationCli {
-	
+
 	public static boolean isCompletedSuccessfully;
 	public static boolean isFailed;
 	public static String messageStatus = "";
 	private static final Logger LOGGER = Logger.getLogger(BatchOperationCli.class.getName());
-	ScheduleAutomationUtility scheduleAutomationUtility = new ScheduleAutomationUtility();
+	ScheduleAutomationUtility scheduleAutomationUtility = new ScheduleAutomationUtility("report");
 	public static String startTime;
-
 
 	public static String getMessageStatus() {
 		return messageStatus;
@@ -31,10 +31,9 @@ public class ReportOperationCli {
 		ReportOperationCli.messageStatus = messageStatus;
 	}
 
-
 	public ReportOperationCli() {
 	}
-	
+
 	public static String getStartTime() {
 
 		return startTime;
@@ -52,10 +51,9 @@ public class ReportOperationCli {
 		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%checking background activity, number of running queries are "
 				+ dbRuningProcessCount + "%%%%%%%%%%%%%%%%%");
 
-        return dbRuningProcessCount < thresold;
+		return dbRuningProcessCount < thresold;
 
-    }
-	
+	}
 
 	public void setCompletedSuccessfully(boolean isCompletedSuccessfully) {
 		ReportOperationCli.isCompletedSuccessfully = isCompletedSuccessfully;
@@ -70,12 +68,10 @@ public class ReportOperationCli {
 		ReportOperationCli.isFailed = isFailed;
 	}
 
-	
-
 	public static boolean isCompletedSuccessfully() {
 		return isCompletedSuccessfully;
 	}
-	
+
 	public String isReportSuccessful() {
 
 		String retVal = "";
@@ -88,7 +84,7 @@ public class ReportOperationCli {
 
 		return retVal;
 	}
-	
+
 	public String isReportFailed() {
 
 		String retVal = "";
@@ -101,7 +97,7 @@ public class ReportOperationCli {
 		return retVal;
 	}
 
-	public int startBatchCli(String command, String path) throws IOException, SchedulerException {
+	public int startReportCli(String command, String path, String jobName) throws IOException, SchedulerException {
 		int counter = 0;
 		BufferedReader r = null;
 
@@ -111,31 +107,35 @@ public class ReportOperationCli {
 				setStartTime();
 				// run Cli command
 				Runtime rt = Runtime.getRuntime();
-		        ProcessBuilder processBuilder = new ProcessBuilder();
-		        processBuilder.directory(new File("C:\\Solife-runtime\\com.bsb.solife.tools.ws.cli-6.3.20\\bin"));
-		        processBuilder.command("cmd.exe", "/C", command);
+				ProcessBuilder processBuilder = new ProcessBuilder();
+				processBuilder.directory(new File("C:\\Solife-runtime\\com.bsb.solife.tools.ws.cli-6.3.20\\bin"));
+				processBuilder.command("cmd.exe", "/C", command);
 
-				
-				//Process pr = rt.exec(command);
-		        Process pr = processBuilder.start();
+				// Process pr = rt.exec(command);
+				Process pr = processBuilder.start();
 				pr.getInputStream();
 				// comment out reading log file to console
 				r = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 				String line;
 				while (true) {
 					line = r.readLine();
-					if (CheckLogFileForMessage.hasReportErrorCode17(line) == true) {
-						
+					if (CheckLogFileForMessage.hasReportErrorCode17(line) == true
+							|| CheckLogFileForMessage.hasReportErrorMessage(line)
+							|| CheckLogFileForMessage.hasReportErrorConnectRefused(line)) {
 						this.isFailed = true;
+						
 						setMessageStatus("Report failed witht the following error: /n" + line);
-						LOGGER.info("Report failed with the following error: " + LOGGER.getName()+ "\n");
+						LOGGER.info("Report failed with the following error: " + LOGGER.getName() + "\n");
+						SendEmail.sendMail(jobName);
 						scheduleAutomationUtility.pauseAlltriggers();
-						LOGGER.info("Report failed all job has been paused, Admin needs to fix the problem and resume: \n" + LOGGER.getName());
-				
+						LOGGER.info(
+								"Report failed all job has been paused, Admin needs to fix the problem and resume: \n"
+										+ LOGGER.getName());
+						break;
+
+					} else if (line == null) {
+						break;
 					}
-					 else if (line == null) {
-							break;
-						}
 
 					System.out.println(line);
 				}

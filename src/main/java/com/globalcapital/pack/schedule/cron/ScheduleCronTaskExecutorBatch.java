@@ -1,14 +1,21 @@
 package com.globalcapital.pack.schedule.cron;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.globalcapital.database.datasource.H2DatabaseLuncher;
@@ -31,35 +38,51 @@ import com.globalcapital.pack.schedule.batch.process.ReschedulingBatchRunTwo;
 @Service
 public class ScheduleCronTaskExecutorBatch {
 
-	public void execute() {
+	public void execute() throws SchedulerException, IOException {
+		Resource res = new ClassPathResource("quartz.properties");
+
+		FileInputStream in = new FileInputStream(res.getURI().getPath());
+		Properties props = new Properties();
+		props.load(in);
+		in.close();
 
 		StdSchedulerFactory schedFactory = new StdSchedulerFactory();
-		Properties props = new Properties();
-		props.setProperty("org.quartz.jobStore.misfireThreshold", "600000");
+
+		FileOutputStream out = new FileOutputStream(res.getURI().getPath());
+		props.setProperty("org.quartz.scheduler.instanceName", "batchReport");
+		props.setProperty("org.quartz.scheduler.instanceId", "batch419");
+		props.store(out, null);
+		schedFactory.initialize(quartzProperties());
 
 		BatchTypeCronTimeBean batchTypeCronTime = H2DatabaseLuncher.getScheduleTime();
 
-		/*
-		 * try { System.out.
-		 * println("**#################- Loaded Dummy Batch Into Cron -#################"
-		 * ); // DummyBatch cron job JobDetail dummyBatchJob =
-		 * JobBuilder.newJob(DummyBatchProcess.class).withIdentity("dummyBatch",
-		 * "group1") .build();
-		 * 
-		 * Trigger dummyTrigger =
-		 * TriggerBuilder.newTrigger().withIdentity("dummyTrigger1", "group1") // using
-		 * dynamic cron dates fetched from the Database
-		 * .withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.
-		 * getDummyBatchTime()) .withMisfireHandlingInstructionDoNothing()) .build();
-		 * Scheduler scheduler1 = schedFactory.getScheduler(); scheduler1.start();
-		 * scheduler1.scheduleJob(dummyBatchJob, dummyTrigger);
-		 * 
-		 * } catch (Exception e) { System.out
-		 * .println("**#################- error in loading dummy batch process into cron --#################"
-		 * );
-		 * 
-		 * e.printStackTrace(); }
-		 */
+		try {
+			System.out.println("**#################- Loaded Dummy Batch Into Cron -#################"); // DummyBatch
+																										// cron job
+			JobDetail dummyBatchJob = JobBuilder.newJob(DummyBatchProcess.class).withIdentity("dummyBatch", "group1")
+					.build();
+			Trigger dummyTrigger = TriggerBuilder.newTrigger().withIdentity("dummyTrigger1", "group1") // using dynamic
+																										// cron dates
+																										// fetched from
+																										// the Database
+					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getDummyBatchTime())
+							.withMisfireHandlingInstructionDoNothing())
+					.build();
+			Scheduler scheduler1 = schedFactory.getScheduler();
+			scheduler1.start();
+			if (scheduler1.checkExists(dummyBatchJob.getKey())) {
+				scheduler1.rescheduleJob(dummyTrigger.getKey(), dummyTrigger);
+			} else {
+
+				scheduler1.scheduleJob(dummyBatchJob, dummyTrigger);
+			}
+
+		} catch (Exception e) {
+			System.out
+					.println("**#################- error in loading dummy batch process into cron --#################");
+
+			e.printStackTrace();
+		}
 
 		try {
 			System.out.println("**#################-Loaded Financial Batch Run One Into Cron#################");
@@ -75,7 +98,12 @@ public class ScheduleCronTaskExecutorBatch {
 					.build();
 			Scheduler schedulerFinancialOne = new StdSchedulerFactory().getScheduler();
 			schedulerFinancialOne.start();
-			schedulerFinancialOne.scheduleJob(financialBatchOneJob, financialOneTrigger);
+			if (schedulerFinancialOne.checkExists(financialBatchOneJob.getKey())) {
+				schedulerFinancialOne.rescheduleJob(financialOneTrigger.getKey(), financialOneTrigger);
+			} else {
+
+				schedulerFinancialOne.scheduleJob(financialBatchOneJob, financialOneTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -99,7 +127,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerFinancialTwo = new StdSchedulerFactory().getScheduler();
 			schedulerFinancialTwo.start();
-			schedulerFinancialTwo.scheduleJob(financialBatchTwoJob, financialTwoTrigger);
+			if (schedulerFinancialTwo.checkExists(financialTwoTrigger.getKey())) {
+				schedulerFinancialTwo.rescheduleJob(financialTwoTrigger.getKey(), financialTwoTrigger);
+			} else {
+				schedulerFinancialTwo.scheduleJob(financialBatchTwoJob, financialTwoTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -123,7 +155,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerGenericOne = new StdSchedulerFactory().getScheduler();
 			schedulerGenericOne.start();
-			schedulerGenericOne.scheduleJob(genericFeesBatchOneJob, genericOneTrigger);
+			if (schedulerGenericOne.checkExists(genericOneTrigger.getKey())) {
+				schedulerGenericOne.rescheduleJob(genericOneTrigger.getKey(), genericOneTrigger);
+			} else {
+				schedulerGenericOne.scheduleJob(genericFeesBatchOneJob, genericOneTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -146,7 +182,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerGenericTwo = new StdSchedulerFactory().getScheduler();
 			schedulerGenericTwo.start();
-			schedulerGenericTwo.scheduleJob(genericFeesBatchTwoJob, genericTwoTrigger);
+			if (schedulerGenericTwo.checkExists(genericTwoTrigger.getKey())) {
+				schedulerGenericTwo.rescheduleJob(genericTwoTrigger.getKey(), genericTwoTrigger);
+			} else {
+				schedulerGenericTwo.scheduleJob(genericFeesBatchTwoJob, genericTwoTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -170,7 +210,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerCoverageChrage = new StdSchedulerFactory().getScheduler();
 			schedulerCoverageChrage.start();
-			schedulerCoverageChrage.scheduleJob(coverageChargeBatchOneJob, coverageChargeOneTrigger);
+			if (schedulerCoverageChrage.checkExists(coverageChargeOneTrigger.getKey())) {
+				schedulerCoverageChrage.rescheduleJob(coverageChargeOneTrigger.getKey(), coverageChargeOneTrigger);
+			} else {
+				schedulerCoverageChrage.scheduleJob(coverageChargeBatchOneJob, coverageChargeOneTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -193,7 +237,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerCoverageChrage = new StdSchedulerFactory().getScheduler();
 			schedulerCoverageChrage.start();
-			schedulerCoverageChrage.scheduleJob(coverageChargeBatchTwoJob, coverageChargeTwoTrigger);
+			if (schedulerCoverageChrage.checkExists(coverageChargeTwoTrigger.getKey())) {
+				schedulerCoverageChrage.rescheduleJob(coverageChargeTwoTrigger.getKey(), coverageChargeTwoTrigger);
+			} else {
+				schedulerCoverageChrage.scheduleJob(coverageChargeBatchTwoJob, coverageChargeTwoTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -218,7 +266,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerAutoFin = new StdSchedulerFactory().getScheduler();
 			schedulerAutoFin.start();
-			schedulerAutoFin.scheduleJob(autoFinancedBatchOneJob, autoFinancedOneTrigger);
+			if (schedulerAutoFin.checkExists(autoFinancedOneTrigger.getKey())) {
+				schedulerAutoFin.rescheduleJob(autoFinancedOneTrigger.getKey(), autoFinancedOneTrigger);
+			} else {
+				schedulerAutoFin.scheduleJob(autoFinancedBatchOneJob, autoFinancedOneTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -242,7 +294,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerAutofinanced = new StdSchedulerFactory().getScheduler();
 			schedulerAutofinanced.start();
-			schedulerAutofinanced.scheduleJob(autofinacedBatchTwoJob, autofinancedTwoTrigger);
+			if (schedulerAutofinanced.checkExists(autofinancedTwoTrigger.getKey())) {
+				schedulerAutofinanced.rescheduleJob(autofinancedTwoTrigger.getKey(), autofinancedTwoTrigger);
+			} else {
+				schedulerAutofinanced.scheduleJob(autofinacedBatchTwoJob, autofinancedTwoTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -267,7 +323,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerReschedulingOne = new StdSchedulerFactory().getScheduler();
 			schedulerReschedulingOne.start();
-			schedulerReschedulingOne.scheduleJob(reschedulingBatchOneJob, reschedulingOneTrigger);
+			if (schedulerReschedulingOne.checkExists(reschedulingOneTrigger.getKey())) {
+				schedulerReschedulingOne.rescheduleJob(reschedulingOneTrigger.getKey(), reschedulingOneTrigger);
+			} else {
+				schedulerReschedulingOne.scheduleJob(reschedulingBatchOneJob, reschedulingOneTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -292,7 +352,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerReschedulingTwo = new StdSchedulerFactory().getScheduler();
 			schedulerReschedulingTwo.start();
-			schedulerReschedulingTwo.scheduleJob(reschdulingBatchTwoJob, reschedulingTwoTrigger);
+			if (schedulerReschedulingTwo.checkExists(reschedulingTwoTrigger.getKey())) {
+				schedulerReschedulingTwo.rescheduleJob(reschedulingTwoTrigger.getKey(), reschedulingTwoTrigger);
+			} else {
+				schedulerReschedulingTwo.scheduleJob(reschdulingBatchTwoJob, reschedulingTwoTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -316,7 +380,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerissuingOne = new StdSchedulerFactory().getScheduler();
 			schedulerissuingOne.start();
-			schedulerissuingOne.scheduleJob(issuingBatchOneJob, issuingOneTrigger);
+			if (schedulerissuingOne.checkExists(issuingOneTrigger.getKey())) {
+				schedulerissuingOne.rescheduleJob(issuingOneTrigger.getKey(), issuingOneTrigger);
+			} else {
+				schedulerissuingOne.scheduleJob(issuingBatchOneJob, issuingOneTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -340,7 +408,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerissuingTwo = new StdSchedulerFactory().getScheduler();
 			schedulerissuingTwo.start();
-			schedulerissuingTwo.scheduleJob(issuingBatchTwoJob, issuingTwoTrigger);
+			if (schedulerissuingTwo.checkExists(issuingTwoTrigger.getKey())) {
+				schedulerissuingTwo.rescheduleJob(issuingTwoTrigger.getKey(), issuingTwoTrigger);
+			} else {
+				schedulerissuingTwo.scheduleJob(issuingBatchTwoJob, issuingTwoTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -364,7 +436,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerRegular = new StdSchedulerFactory().getScheduler();
 			schedulerRegular.start();
-			schedulerRegular.scheduleJob(regularBatchOneJob, regularSerOneTrigger);
+			if (schedulerRegular.checkExists(regularSerOneTrigger.getKey())) {
+				schedulerRegular.rescheduleJob(regularSerOneTrigger.getKey(), regularSerOneTrigger);
+			} else {
+				schedulerRegular.scheduleJob(regularBatchOneJob, regularSerOneTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -388,7 +464,11 @@ public class ScheduleCronTaskExecutorBatch {
 
 			Scheduler schedulerRegular = new StdSchedulerFactory().getScheduler();
 			schedulerRegular.start();
-			schedulerRegular.scheduleJob(regularBatchTwoJob, regularTwoTrigger);
+			if (schedulerRegular.checkExists(regularTwoTrigger.getKey())) {
+				schedulerRegular.rescheduleJob(regularTwoTrigger.getKey(), regularTwoTrigger);
+			} else {
+				schedulerRegular.scheduleJob(regularBatchTwoJob, regularTwoTrigger);
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -425,6 +505,14 @@ public class ScheduleCronTaskExecutorBatch {
 		 * 
 		 * e.printStackTrace(); }
 		 */
+	}
+
+	// setting the quartz configutaion properties
+	public Properties quartzProperties() throws IOException {
+		PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+		propertiesFactoryBean.setLocation(new ClassPathResource("/quartz.properties"));
+		propertiesFactoryBean.afterPropertiesSet();
+		return propertiesFactoryBean.getObject();
 	}
 
 }

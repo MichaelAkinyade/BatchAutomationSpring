@@ -19,27 +19,18 @@ public class ScheduleConstantClass {
 	public static final int regularBatchTwo = 14;
 
 	public static final int acutrialWeekly = 16;
-	public static final int lifeCoversWeekly= 17;
-	public static final int fundSplitsWeekly= 18;
-	public static final int policyBeneficiaries=19;
-	public static final int policyHolders=20;
-	public static final int policyPayers=21;
-	public static final int thirdPartyActiveAddress=22;
-	public static final int termActurialExtractCFI=23;
-	public static final int termActurialExtractDeact=24;
-	public static final int termActurialExtractDeath=25;
-	public static final int termActurialExtractRedemp=26;
-	public static final int termActurialExtractSurren=27;
-	public static final int termActurialExtractTerm=28;
-
-
-
-
-
-
-
-
-
+	public static final int lifeCoversWeekly = 17;
+	public static final int fundSplitsWeekly = 18;
+	public static final int policyBeneficiaries = 19;
+	public static final int policyHolders = 20;
+	public static final int policyPayers = 21;
+	public static final int thirdPartyActiveAddress = 22;
+	public static final int termActurialExtractCFI = 23;
+	public static final int termActurialExtractDeact = 24;
+	public static final int termActurialExtractDeath = 25;
+	public static final int termActurialExtractRedemp = 26;
+	public static final int termActurialExtractSurren = 27;
+	public static final int termActurialExtractTerm = 28;
 
 	public static String resolveBatchCodeToBatchName(int batchTypeId) {
 
@@ -106,6 +97,50 @@ public class ScheduleConstantClass {
 
 		case regularBatchTwo:
 			retVal = "regularBatchTwo";
+			break;
+
+		case acutrialWeekly:
+			retVal = "acutrialWeekly";
+			break;
+
+		case lifeCoversWeekly:
+			retVal = "lifeCoversWeekly";
+			break;
+
+		case fundSplitsWeekly:
+			retVal = "fundSplitsWeekly";
+			break;
+
+		case policyBeneficiaries:
+			retVal = "policyBeneficiaries";
+			break;
+		case policyHolders:
+			retVal = "policyHolders";
+			break;
+		case policyPayers:
+			retVal = "policyPayers";
+			break;
+		case thirdPartyActiveAddress:
+			retVal = "thirdPartyActiveAddress";
+			break;
+		case termActurialExtractCFI:
+			retVal = "termActurialExtractCFI";
+			break;
+		case termActurialExtractDeact:
+			retVal = "termActurialExtractDeact";
+			break;
+		case termActurialExtractDeath:
+			retVal = "termActurialExtractDeath";
+			break;
+
+		case termActurialExtractRedemp:
+			retVal = "termActurialExtractRedemp";
+			break;
+		case termActurialExtractSurren:
+			retVal = "termActurialExtractSurren";
+			break;
+		case termActurialExtractTerm:
+			retVal = "termActurialExtractTerm";
 			break;
 
 		default:

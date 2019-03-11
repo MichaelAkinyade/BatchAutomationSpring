@@ -5,6 +5,15 @@ import java.util.List;
 import com.globalcapital.database.datasource.H2DatabaseLuncher;
 
 public class Users {
+	public String confirmPassword;
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
 
 	private int id;
 

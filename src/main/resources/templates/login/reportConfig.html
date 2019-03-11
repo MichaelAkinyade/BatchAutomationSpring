@@ -52,8 +52,8 @@
 	rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Cutive'
 	rel='stylesheet'>
-
 <link href="/css/editedCss.css" rel="stylesheet" media="all">
+
 
 <script type="text/javascript"
 	src="//code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -88,7 +88,7 @@
 					</div>
 					<div class="header__navbar">
 						<ul class="list-unstyled">
-							<li class="has-sub"><a href="#"> <i
+							<li class="has-sub"><a th:href="@{/batchConfig}"> <i
 									class="fas fa-tachometer-alt"></i>Batch Config <span
 									class="bot-line"></span>
 							</a> <!--<ul class="header3-sub-list list-unstyled">
@@ -105,9 +105,8 @@
                                         <a href="index4.html">Dashboard 4</a>
                                     </li>
                                 </ul>--></li>
-							<li><a th:href="@{/reportConfig}"> <i
-									class="fas fa-shopping-basket"></i> <span class="bot-line"></span>
-									Report config
+							<li><a href="#"> <i class="fas fa-shopping-basket"></i>
+									<span class="bot-line"></span> Report config
 							</a></li>
 							<li><a href="table.html"> <i class="fas fa-trophy"></i>
 									<span class="bot-line"></span>Solife DB
@@ -259,18 +258,18 @@
 			<button class="btn btn-md btn-danger btn-block" name="registration"
 				type="Submit">Logout</button>
 		</form>
-		<h4 class="reportHeaderText">Batch Configuration Page</h4>
+		<h4 class="reportHeaderText">Report Configuration Page</h4>
 
 		<div clss="container">
 			<div class="row">
-				<div class="col-lg-6" id="changeTimeAndDate">
+				<div class="col-lg-6">
 					<!-- calendar details, DatePicker and submit button-->
-					<form th:action="@{/batchConfigButt}" method="post"
+					<form th:action="@{/reportConfigButt}" method="post"
 						class="form-dataPicker">
 						<div class="border content text-center"
 							style="width: 15cm; margin-top: 40px; margin-left: 100px; margin-bottom: 50px; border-radius: 15px;">
 							<h5>
-								<b class="bodyHeaderText"> Change Batch Date and time </b>
+								<b class="bodyHeaderText"> Change Report Date and time </b>
 							</h5>
 							<br>
 							<div class="row">
@@ -296,7 +295,7 @@
 							role="button" id="dropdownMenuLink" data-toggle="dropdown"
 							aria-haspopup="true" aria-expanded="false"> Batch Type </a>-->
 
-								<select th:value="${id}" name="batchTypeSelector"
+								<select th:value="${id}" name="reportTypeSelector"
 									class="dropdown show btn btn-secondary dropdown-toggle col-lg-3 col-md-1"
 									aria-haspopup="true" aria-expanded="false"
 									STYLE="margin-right: 10px; margin-bottom: 30px">
@@ -306,9 +305,9 @@
 									<option class="btn btn-secondary dropdown-toggle" role="button"
 										id="dropdownMenuLink" data-toggle="dropdown"
 										aria-haspopup="true" aria-expanded="false"
-										th:each="batchType : ${batchTypeList}"
-										th:value="${batchType.id}" th:text="${batchType.batchName}"
-										th:selected="${batchType.id}"></option>
+										th:each="reportType : ${reportTypeList}"
+										th:value="${reportType.id}" th:text="${reportType.reportName}"
+										th:selected="${reportType.id}"></option>
 								</select>
 
 								<script type="text/javascript">
@@ -323,25 +322,27 @@
 							<div class="row">
 								<div class="col-lg-5 text-center"
 									style="margin-left: 180px; margin-bottom: 20px">
-									<button name="action" value="submitCalender"
+									<button name="action" value="submitCalenderReport"
 										class="btn btn-primary calender" type="submit"
 										style="width: 200px">Submit</button>
 								</div>
 							</div>
 						</div>
+
 						<!-- Table location  -->
 
 						<div class="row">
 
 							<div class="col-lg">
-								<table class="table tableChangeTimeAndDate" >
+								<table class="table tableChangeTimeAndDate">
 									<thead class="thead-dark">
 										<tr>
 											<th scope="col">#</th>
 											<th scope="col">Batch Name</th>
 											<th scope="col">Status</th>
-<!-- 											<th scope="col">Sched Date Time</th>
- -->											<th scope="col">Last Fire</th>
+											<!-- 											<th scope="col">Sched Date Time</th>
+ -->
+											<th scope="col">Last Fire</th>
 											<th scope="col">Next Time</th>
 										</tr>
 									</thead>
@@ -350,9 +351,10 @@
 											<th scope="row" th:text="${tableData.numb}">1</th>
 											<td th:text="${tableData.name}"></td>
 											<td th:text="${tableData.status}"></td>
-<!-- 											<td th:text="${tableData.schedDateAndTime}"></td>
- -->											<td th:text="${tableData.lastFire}"> </td>
-											<td th:text="${tableData.nextFire}"> </td>
+											<!-- 											<td th:text="${tableData.schedDateAndTime}"></td>
+ -->
+											<td th:text="${tableData.lastFire}"></td>
+											<td th:text="${tableData.nextFire}"></td>
 										</tr>
 									</tbody>
 								</table>
@@ -360,24 +362,23 @@
 
 							</div>
 						</div>
-
 					</form>
 
 				</div>
 				<!--Second Part of configuration with toggle button Pause and Resume Single Batch -->
 
 				<div class="col-lg-6">
-					<form th:action="@{/batchConfigButt}" method="post">
+					<form th:action="@{/reportConfigButt}" method="post">
 						<div class="border content text-center"
-							style="width: 15cm; margin-top: 40px; margin-left: 20px; margin-bottom: 50px; border-radius: 15px;">
+							style="width: 15cm; margin-top: 40px; margin-left: 120px; margin-bottom: 50px; border-radius: 15px;">
 							<h5>
-								<b class="bodyHeaderText"> Pause and Resume Single Batch</b>
+								<b class="bodyHeaderText"> Pause And Resume Single Batch</b>
 							</h5>
 							<br>
 							<div class="row">
 
 								<div class='col-lg-9 ml-5'>
-									<select th:value="${id}" name="batchTypeSelector"
+									<select th:value="${id}" name="reportTypeSelector"
 										class="dropdown show btn btn-secondary dropdown-toggle col-lg-6 col-md-6"
 										aria-haspopup="true" aria-expanded="false"
 										STYLE="margin-left: 100px; margin-bottom: 30px">
@@ -387,9 +388,10 @@
 										<option class="btn btn-secondary dropdown-toggle"
 											role="button" id="dropdownMenuLink" data-toggle="dropdown"
 											aria-haspopup="true" aria-expanded="false"
-											th:each="batchType : ${batchTypeList}"
-											th:value="${batchType.id}" th:text="${batchType.batchName}"
-											th:selected="${batchType.id}"></option>
+											th:each="reportType : ${reportTypeList}"
+											th:value="${reportType.id}"
+											th:text="${reportType.reportName}"
+											th:selected="${reportType.id}"></option>
 									</select> <input type="checkbox" data-toggle="toggle" data-on="Pause"
 										data-off="Resume" name="checkboxVal"
 										th:checked="${myBooleanVariable}">
@@ -402,7 +404,7 @@
 							<div class="row">
 								<div class="col-lg-5 text-center"
 									style="margin-left: 180px; margin-bottom: 20px">
-									<button name="action" value="submitSinglePauseResume"
+									<button name="action" value="submitSinglePauseResumeReport"
 										class="btn btn-primary calender" type="submit"
 										style="width: 200px">Submit</button>
 								</div>
@@ -415,7 +417,7 @@
 									<div class="resumePause">
 										<div class="row" align="center">
 
-											<label class="labelTextAlign"> Pause All Batches </label>
+											<label class="labelTextAlign"> Pause All Report </label>
 										</div>
 
 										<button name="action" value="pause"
@@ -435,7 +437,7 @@
 									<div class="resumePause">
 										<div class="row" align="center">
 
-											<label class="labelTextAlign"> Resume All Batches </label>
+											<label class="labelTextAlign"> Resume All Report </label>
 										</div>
 
 										<button name="action" value="resume"
@@ -451,7 +453,6 @@
 
 						</div>
 					</form>
-
 				</div>
 			</div>
 		</div>

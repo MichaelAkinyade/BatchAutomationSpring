@@ -1,23 +1,23 @@
 package com.globalcapital.pack.schedule.report.process;
 
 import java.io.IOException;
-import java.util.TimerTask;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
 import com.globalcapital.database.datasource.H2DatabaseLuncher;
 import com.globalcapital.pack.bean.ReportExecutionBean;
-import com.globalcapital.pack.engine.batchSchedule.BatchOperationCli;
 import com.globalcapital.pack.engine.batchSchedule.ReportOperationCli;
 import com.globalcapital.pack.schedule.utility.ScheduleAutomationUtility;
 import com.globalcapital.pack.schedule.utility.ScheduleConstantClass;
 import com.globalcapital.utility.DateUtility;
 import com.globalcapital.utility.PropertyFileUtils;
 
+@DisallowConcurrentExecution
 public class LifeCovers  implements Job {
 	ReportExecutionBean reportBean = new ReportExecutionBean();
-	ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility();
+	ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility("report");
 
 	public void execute(JobExecutionContext context) {
 		
@@ -35,7 +35,7 @@ public class LifeCovers  implements Job {
 			//reportBean.setPassword(prop1.loadProperties().getProperty("solife.batch.password"));
 			String command = " run start reportingJob reportingConfigName=" + reportBean.getReportName();
 			ReportOperationCli reportOperationCli = new ReportOperationCli();
-			reportOperationCli.startBatchCli(command, reportBean.getPath());
+			reportOperationCli.startReportCli(command, reportBean.getPath(),"LIFE_COVERS");
 			H2DatabaseLuncher.executeStatementInsertAndTruncate(
 					"INSERT INTO REPORT_AUDIT (ID, REPORT_ID, LAST_RUN_DATE, NEXT_SCHEDULE_DATE, REPORT_SUCCESSFUL, REPORT_FAILED, REPORT_STARTTIME, REPORT_ENDTIME) VALUES (report_seq.nextval,'"
 							+ ScheduleConstantClass.lifeCoversWeekly + "','"

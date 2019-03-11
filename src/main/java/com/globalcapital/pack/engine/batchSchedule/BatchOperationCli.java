@@ -9,6 +9,7 @@ import org.quartz.SchedulerException;
 
 import com.globalcapital.database.datasource.MyDataSourceFactory;
 import com.globalcapital.pack.schedule.utility.ScheduleAutomationUtility;
+import com.globalcapital.pack.service.SendEmail;
 import com.globalcapital.utility.CheckLogFileForMessage;
 import com.globalcapital.utility.DateUtility;
 
@@ -18,7 +19,7 @@ public class BatchOperationCli {
 	public static boolean isFailed;
 	public static String messageStatus = "";
 	private static final Logger LOGGER = Logger.getLogger(BatchOperationCli.class.getName());
-	ScheduleAutomationUtility scheduleAutomationUtility = new ScheduleAutomationUtility();
+	ScheduleAutomationUtility scheduleAutomationUtility = new ScheduleAutomationUtility("batch");
 
 	public static String getMessageStatus() {
 		return messageStatus;
@@ -60,7 +61,7 @@ public class BatchOperationCli {
 		BatchOperationCli.isFailed = isFailed;
 	}
 
-	public int startBatchCli(String command) throws IOException, SchedulerException {
+	public int startBatchCli(String command, String jobName) throws IOException, SchedulerException {
 		int counter = 0;
 		BufferedReader r = null;
 
@@ -87,12 +88,15 @@ public class BatchOperationCli {
 					// read log output to see if batch failed
 					if (CheckLogFileForMessage.hasCode99(line) == true || CheckLogFileForMessage.hasCode3(line) == true
 							|| CheckLogFileForMessage.hasCode4(line) == true
-							|| CheckLogFileForMessage.hasCode2(line) == true){
+							|| CheckLogFileForMessage.hasCode2(line) == true) {
 						this.isFailed = true;
+						SendEmail.sendMail(jobName);
 						setMessageStatus("Batch failed witht the following error: /n" + line);
-						LOGGER.info("Batch failed with the following error: " + LOGGER.getName()+ "\n");
+						LOGGER.info("Batch failed with the following error: " + LOGGER.getName() + "\n");
 						scheduleAutomationUtility.pauseAlltriggers();
-						LOGGER.info("Batch failed all job has been paused, Admin needs to fix the problem and resume: \n" + LOGGER.getName());
+						LOGGER.info(
+								"Batch failed all job has been paused, Admin needs to fix the problem and resume: \n"
+										+ LOGGER.getName());
 					} else if (line == null) {
 						break;
 					}

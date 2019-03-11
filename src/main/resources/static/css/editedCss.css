@@ -29,6 +29,8 @@
 }
 
 .labelTextAlign {
+	font-family: 'Cutive';
+	font-size: 12px;
 	text-align: center;
 	margin-left: 220px;
 	margin-bottom: 25px;
@@ -42,4 +44,89 @@ hr {
 	margin-right: auto;
 	border-style: inset;
 	border-width: 1px;
+}
+
+.reportHeaderText {
+	font-family: 'Cutive';
+	font-size: 20px;
+	text-align: center;
+	margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+.bodyHeaderText {
+	font-family: 'Cutive';
+	font-size: 12px;
+	text-align: center;
+	margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+#changeTimeDateDiv{
+	margin-left: 20
+	
+}
+.tableChangeTimeAndDate{
+	margin-left: 100px;
+	
+}
+.changeTimeAndDate{
+	margin-bottom: 20px;
+	
+}
+
+
+.emailConfig{
+	
+	margin-top: 90px;
+	margin-bottom: 180px;
+	text-align: center;
+	font-family: 'Cutive';
+	font-size: 12px;
+}
+.registrationText{
+	text-align: center;
+	font-family: 'Cutive';
+	font-size: 12px;
+	margin-left: 150px;
+}
+
+.note
+{
+    text-align: center;
+    height: 80px;
+    background: -webkit-linear-gradient(left, #0072ff, #8811c5);
+    color: #fff;
+    font-weight: bold;
+    line-height: 80px;
+}
+.form-content
+{
+    padding: 5%;
+    border: 1px solid #ced4da;
+    margin-bottom: 2%;
+}
+.form-control{
+    border-radius:1.5rem;
+}
+.btnSubmit
+{
+    border:none;
+    border-radius:1.5rem;
+    padding: 1%;
+    width: 20%;
+    cursor: pointer;
+    background: #0062cc;
+    color: #fff;
+}
+
+.tableText{
+		font-family: 'Cutive';
+	font-size: 12px;
+}
+
+.tableTextHeader{
+		font-family: 'Cutive';
+	font-size: 12px;
+	font-weight: bold;
 }

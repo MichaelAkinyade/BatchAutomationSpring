@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.quartz.Scheduler;
 
 import com.globalcapital.database.datasource.H2DatabaseLuncher;
 import com.globalcapital.pack.bean.BatchExecutionBean;
@@ -20,8 +21,8 @@ public class DummyBatchProcess implements Job {
 
 	public void execute(JobExecutionContext context) {
 		BatchExecutionBean batchBean = new BatchExecutionBean();
-		ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility();
-
+		// Load schedule by the exact instance
+		ScheduleAutomationUtility scheduler = new ScheduleAutomationUtility("batch");
 		Properties prop = null;
 		// Spring issues cannot instantiate bean factory to load
 		// genericService.findAllRuningQueries().size(), hence using Datasource to fetch
@@ -32,7 +33,7 @@ public class DummyBatchProcess implements Job {
 		// SpringApplicationContext.getBean("genericServiceImp");
 		// GenericServiceImpl genericService=factory.getBean(GenericServiceImpl.class);
 		try {
-
+			System.out.println("*****************  Dummy Process Strated *************** ");
 			PropertyFileUtils prop1 = new PropertyFileUtils("reportBatch.properties");
 			prop = prop1.loadProperties();
 			batchBean.setPath(prop1.loadProperties().getProperty("solife.batch.console"));
@@ -48,7 +49,7 @@ public class DummyBatchProcess implements Job {
 					+ batchBean.getUsername() + " -p " + batchBean.getPassword() + " -jndi.url\r\n "
 					+ batchBean.getJndiServer() + " -server.url " + batchBean.getServerUrl() + " -s ";
 			BatchOperationCli batchOperationCli = new BatchOperationCli();
-			batchOperationCli.startBatchCli(command);
+			batchOperationCli.startBatchCli(command, "DummyBatch");
 			H2DatabaseLuncher.executeStatementInsertAndTruncate(
 					"INSERT INTO BATCH_AUDIT (ID, BATCHTYPE_ID, LAST_RUN_DATE, NEXT_SCHDULE_DATE, BATCH_CSUCCESSFUL, BATCH_FAILED, BATCH_STARTTIME, BATCH_ENDTIME) VALUES (s.nextval,'"
 							+ ScheduleConstantClass.dummyBatch + "','"

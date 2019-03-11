@@ -1,9 +1,9 @@
 package com.globalcapital.pack.schedule.cron;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+
+import javax.sql.DataSource;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -13,9 +13,9 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.globalcapital.database.datasource.H2DatabaseLuncher;
@@ -35,31 +35,24 @@ import com.globalcapital.pack.schedule.report.process.TermActurialExtractTerm;
 import com.globalcapital.pack.schedule.report.process.ThirdPartyActiveAddress;
 
 @Service
-public class ScheduleCronTaskExecutorReport {
+public class ScheduleCronTaskExecutorReportBck {
 
-	public ScheduleCronTaskExecutorReport() {
+
+	public ScheduleCronTaskExecutorReportBck() {
 
 	}
 
 	// For the report console
 	public void execute() throws SchedulerException, IOException {
 
-		Resource res = new ClassPathResource("quartz.properties");
-		FileInputStream in = new FileInputStream(res.getURI().getPath());
-		Properties props = new Properties();
-		props.load(in);
-		in.close();
-		
 		StdSchedulerFactory schedFactory = new StdSchedulerFactory();
-		
-		FileOutputStream out = new FileOutputStream(res.getURI().getPath());
-		props.setProperty("org.quartz.scheduler.instanceName", "reportReport");
-		props.setProperty("org.quartz.scheduler.instanceId", "report419");
-		props.setProperty("org.quartz.threadPool.threadCount", "1");
-		props.store(out, null);
 		schedFactory.initialize(quartzProperties());
+		// Properties props = new Properties();
 		// props.setProperty("org.quartz.jobStore.misfireThreshold", "600000");
 		ReportTypeCronTimeBean reportTypeCronTime = H2DatabaseLuncher.getScheduleTimeReport();
+
+		// BatchTypeCronTimeBean batchTypeCronTime =
+		// H2DatabaseLuncher.getScheduleTime();
 
 		try {
 			System.out.println("**#################- Loaded Acutrial Weekly Into Cron -#################");
@@ -97,8 +90,8 @@ public class ScheduleCronTaskExecutorReport {
 
 			Trigger lifeCoversTrigger = TriggerBuilder.newTrigger().withIdentity("lifeCoversTrigger1", "lifeCoverGroup")
 					// using dynamic cron dates fetched from the Database
-					.withSchedule(
-							CronScheduleBuilder.cronSchedule(reportTypeCronTime.getLifeCoversWeekly()).withMisfireHandlingInstructionDoNothing())
+					.withSchedule(CronScheduleBuilder.cronSchedule(reportTypeCronTime.getLifeCoversWeekly())
+							.withMisfireHandlingInstructionDoNothing())
 					.build();
 			Scheduler schedulerLiveCoveres = schedFactory.getScheduler();
 			schedulerLiveCoveres.start();
@@ -303,11 +296,10 @@ public class ScheduleCronTaskExecutorReport {
 			Scheduler schedulerpolicyPayers = schedFactory.getScheduler();
 			schedulerpolicyPayers.start();
 			if (schedulerpolicyPayers.checkExists(termActurialExtractDeact.getKey())) {
-				schedulerpolicyPayers.rescheduleJob(termActurialExtractDeactTrigger.getKey(),
-						termActurialExtractDeactTrigger);
+				schedulerpolicyPayers.rescheduleJob(termActurialExtractDeactTrigger.getKey(), termActurialExtractDeactTrigger);
 			} else {
 
-				schedulerpolicyPayers.scheduleJob(termActurialExtractDeact, termActurialExtractDeactTrigger);
+				 schedulerpolicyPayers.scheduleJob(termActurialExtractDeact, termActurialExtractDeactTrigger);
 			}
 
 		} catch (Exception e) {
@@ -332,13 +324,13 @@ public class ScheduleCronTaskExecutorReport {
 			Scheduler schedulertermActurialExtractDeath = schedFactory.getScheduler();
 			schedulertermActurialExtractDeath.start();
 			if (schedulertermActurialExtractDeath.checkExists(termActurialExtractDeath.getKey())) {
-				schedulertermActurialExtractDeath.rescheduleJob(termActurialExtractDeathTrigger.getKey(),
-						termActurialExtractDeathTrigger);
+				schedulertermActurialExtractDeath.rescheduleJob(termActurialExtractDeathTrigger.getKey(), termActurialExtractDeathTrigger);
 			} else {
 
-				schedulertermActurialExtractDeath.scheduleJob(termActurialExtractDeath,
-						termActurialExtractDeathTrigger);
+				schedulertermActurialExtractDeath.scheduleJob(termActurialExtractDeath, termActurialExtractDeathTrigger);
 			}
+
+			
 
 		} catch (Exception e) {
 			System.out.println(
@@ -362,13 +354,13 @@ public class ScheduleCronTaskExecutorReport {
 			Scheduler schedulertermActurialExtractRedemp = schedFactory.getScheduler();
 			schedulertermActurialExtractRedemp.start();
 			if (schedulertermActurialExtractRedemp.checkExists(termActurialExtractRedemp.getKey())) {
-				schedulertermActurialExtractRedemp.rescheduleJob(termActurialExtractRedempTrigger.getKey(),
-						termActurialExtractRedempTrigger);
+				schedulertermActurialExtractRedemp.rescheduleJob(termActurialExtractRedempTrigger.getKey(), termActurialExtractRedempTrigger);
 			} else {
 
-				schedulertermActurialExtractRedemp.scheduleJob(termActurialExtractRedemp,
-						termActurialExtractRedempTrigger);
+				schedulertermActurialExtractRedemp.scheduleJob(termActurialExtractRedemp,termActurialExtractRedempTrigger);
 			}
+
+			
 
 		} catch (Exception e) {
 			System.out.println(
@@ -392,13 +384,13 @@ public class ScheduleCronTaskExecutorReport {
 			Scheduler schedulertermActurialExtractSurren = schedFactory.getScheduler();
 			schedulertermActurialExtractSurren.start();
 			if (schedulertermActurialExtractSurren.checkExists(termActurialExtractSurren.getKey())) {
-				schedulertermActurialExtractSurren.rescheduleJob(termActurialExtractSurrenTrigger.getKey(),
-						termActurialExtractSurrenTrigger);
+				schedulertermActurialExtractSurren.rescheduleJob(termActurialExtractSurrenTrigger.getKey(), termActurialExtractSurrenTrigger);
 			} else {
 
-				schedulertermActurialExtractSurren.scheduleJob(termActurialExtractSurren,
-						termActurialExtractSurrenTrigger);
+				 schedulertermActurialExtractSurren.scheduleJob(termActurialExtractSurren, termActurialExtractSurrenTrigger);
 			}
+
+			
 
 		} catch (Exception e) {
 			System.out.println(
@@ -422,12 +414,10 @@ public class ScheduleCronTaskExecutorReport {
 			Scheduler schedulertertermActurialExtractTerm = schedFactory.getScheduler();
 			schedulertertermActurialExtractTerm.start();
 			if (schedulertertermActurialExtractTerm.checkExists(termActurialExtractTerm.getKey())) {
-				schedulertertermActurialExtractTerm.rescheduleJob(termActurialExtractTermTrigger.getKey(),
-						termActurialExtractTermTrigger);
+				schedulertertermActurialExtractTerm.rescheduleJob(termActurialExtractTermTrigger.getKey(), termActurialExtractTermTrigger);
 			} else {
 
-				schedulertertermActurialExtractTerm.scheduleJob(termActurialExtractTerm,
-						termActurialExtractTermTrigger);
+				schedulertertermActurialExtractTerm.scheduleJob(termActurialExtractTerm, termActurialExtractTermTrigger);
 			}
 
 		} catch (Exception e) {
