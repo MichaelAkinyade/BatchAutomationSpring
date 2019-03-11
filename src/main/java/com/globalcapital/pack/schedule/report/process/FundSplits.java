@@ -49,7 +49,6 @@ public class FundSplits  implements Job {
 			System.out.println("Application has hit an error, see error details below");
 			e.printStackTrace();
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		}
 	}

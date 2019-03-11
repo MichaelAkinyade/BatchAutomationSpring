@@ -447,7 +447,7 @@ public class H2DatabaseLuncher {
 			System.out.println("...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
-			System.out.println(" getScheduleTimeCondition ");
+			System.out.println("  ");
 			String sql = " SELECT * FROM BATCH_SCHEDULE_TIME where  batch_Type =" + condition;
 			stmt = conn.createStatement();
 			stmt.executeQuery(sql);
@@ -501,7 +501,7 @@ public class H2DatabaseLuncher {
 			System.out.println("...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
-			System.out.println(" getScheduleTimeCondition ");
+			System.out.println("  ");
 			String sql = " SELECT * FROM REPORT_SCHEDULE_TIME where  report_Type =" + condition;
 			stmt = conn.createStatement();
 			stmt.executeQuery(sql);

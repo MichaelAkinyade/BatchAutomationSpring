@@ -217,7 +217,7 @@ public class LoginController {
 	public ModelAndView resume(HttpServletRequest request, Model model)
 			throws SchedulerException, FileNotFoundException, IOException {
 		scheduleAutomationUtilityBatch.resumeAllTriggers();
-		System.out.println("Resume Pressed");
+		System.out.println("");
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("batchReport"));
 		modelAndView.setViewName("/login/batchConfig.html");
@@ -229,7 +229,7 @@ public class LoginController {
 	public ModelAndView resumeReport(HttpServletRequest request, Model model)
 			throws SchedulerException, FileNotFoundException, IOException {
 		scheduleAutomationUtilityReport.resumeAllTriggers();
-		System.out.println("Resume Pressed");
+		System.out.println("");
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportReport"));
 		modelAndView.setViewName("/login/reportConfig.html");
