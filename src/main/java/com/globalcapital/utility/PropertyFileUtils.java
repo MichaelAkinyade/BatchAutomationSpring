@@ -28,10 +28,9 @@ public class PropertyFileUtils {
 	public Properties loadProperties() {
 
 		try {
-			 Path path = Paths.get(getClass().getClassLoader()
-				     .getResource(propertyFileName).toURI()); 
+			 //Path path = Paths.get(getClass().getClassLoader().getResource(propertyFileName).toURI()); 
 			//System.out.println("********URL is "+path);
-			input = new FileInputStream(path.toString());
+			input = new FileInputStream(propertyFileName);
 			// load a properties file
 			prop.load(input);
 			
@@ -39,9 +38,6 @@ public class PropertyFileUtils {
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} finally {
 			if (input != null) {
 				try {

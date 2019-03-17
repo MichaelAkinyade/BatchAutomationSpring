@@ -504,7 +504,7 @@
    *
    * @param {string} [commandArgument] - Some commands (like `'value'`) may require an argument.
    * @see CircleProgress
-   * @alias "$(...).circleProgress"
+   * @alias "$().circleProgress"
    */
   $.fn.circleProgress = function(configOrCommand, commandArgument) {
     var dataName = 'circle-progress',

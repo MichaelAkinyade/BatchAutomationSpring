@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -116,30 +115,32 @@ public class ScheduleAutomationUtility {
 		StdSchedulerFactory schedFactory = new StdSchedulerFactory();
 		String instanceId = "";
 		if (operationType.contains("report")) {
-			operationType = "reportReport";
+			operationType = "reportInstance";
 			instanceId = "report419";
 		} else if (operationType.contains("batch")) {
 			operationType = "batchReport";
 			instanceId = "batch419";
 		}
 
-		Resource res = new ClassPathResource("quartz.properties");
-		FileInputStream in = new FileInputStream(res.getURI().getPath());
+		
+		FileInputStream in = new FileInputStream("quartz.properties");
 		Properties props = new Properties();
 		props.load(in);
 		in.close();
-
-		FileOutputStream out = new FileOutputStream(res.getURI().getPath());
+		FileOutputStream out = new FileOutputStream("quartz.properties");
 		props.setProperty("org.quartz.scheduler.instanceName", operationType);
 		props.setProperty("org.quartz.scheduler.instanceId", instanceId);
 		props.setProperty("org.quartz.threadPool.threadCount", "1");
 		props.store(out, null);
+		/*
+		 * 
+		 * PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+		 * propertiesFactoryBean.setLocation(new ClassPathResource(in.));
+		 * propertiesFactoryBean.afterPropertiesSet();
+		 */
+		out.close();
 
-		PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-		propertiesFactoryBean.setLocation(new ClassPathResource("/quartz.properties"));
-		propertiesFactoryBean.afterPropertiesSet();
-
-		schedFactory.initialize(propertiesFactoryBean.getObject());
+		schedFactory.initialize(props);
 
 		return schedFactory.getScheduler();
 
@@ -151,8 +152,7 @@ public class ScheduleAutomationUtility {
 		// scheduler.resumeAll();
 		Trigger trig;
 		try {
-			// String jobNameFind= "dummyBatch";
-			// String groupName = "group1";
+			
 
 			for (String groupName : scheduler.getJobGroupNames()) {
 

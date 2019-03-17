@@ -16,7 +16,7 @@ import com.globalcapital.database.datasource.H2DatabaseLuncher;
 import com.globalcapital.pack.database.entity.Users;
 
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-	private static List<Users> users = new ArrayList();
+	private static List<Users> users = new ArrayList<Users>();
 
 	PasswordEncoding passwordEncoding = new PasswordEncoding();
 

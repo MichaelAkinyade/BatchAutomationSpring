@@ -16,7 +16,7 @@ public class ThymeleafConfigurator {
 	@Bean
 	public ClassLoaderTemplateResolver emailTemplateResolver() {
 		ClassLoaderTemplateResolver emailTemplateResolver = new ClassLoaderTemplateResolver();
-		emailTemplateResolver.setPrefix("loginPage/");
+       //mailTemplateResolver.setPrefix("classpath:/templates/login/");
 		emailTemplateResolver.setSuffix(".html");
 		emailTemplateResolver.setTemplateMode(TemplateMode.HTML);
 		emailTemplateResolver.setCharacterEncoding("UTF-8");

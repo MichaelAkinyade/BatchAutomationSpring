@@ -1,8 +1,10 @@
 package com.globalcapital.pack.schedule.cron;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.quartz.CronScheduleBuilder;
@@ -43,20 +45,19 @@ public class ScheduleCronTaskExecutorReport {
 
 	// For the report console
 	public void execute() throws SchedulerException, IOException {
-
-		Resource res = new ClassPathResource("quartz.properties");
-		FileInputStream in = new FileInputStream(res.getURI().getPath());
+		
+		FileInputStream in = new FileInputStream("quartz.properties");
 		Properties props = new Properties();
 		props.load(in);
 		in.close();
 		
 		StdSchedulerFactory schedFactory = new StdSchedulerFactory();
-		
-		FileOutputStream out = new FileOutputStream(res.getURI().getPath());
-		props.setProperty("org.quartz.scheduler.instanceName", "reportReport");
+		FileOutputStream out = new FileOutputStream("quartz.properties");
+		props.setProperty("org.quartz.scheduler.instanceName", "reportInstance");
 		props.setProperty("org.quartz.scheduler.instanceId", "report419");
 		props.setProperty("org.quartz.threadPool.threadCount", "1");
 		props.store(out, null);
+		out.close();
 		schedFactory.initialize(quartzProperties());
 		// props.setProperty("org.quartz.jobStore.misfireThreshold", "600000");
 		ReportTypeCronTimeBean reportTypeCronTime = H2DatabaseLuncher.getScheduleTimeReport();

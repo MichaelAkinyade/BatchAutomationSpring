@@ -2,6 +2,7 @@ package com.globalcapital.pack.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,11 +16,11 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,7 +39,8 @@ import com.globalcapital.pack.bean.SessionBean;
 import com.globalcapital.pack.configuration.security.PasswordEncoding;
 import com.globalcapital.pack.database.entity.Users;
 import com.globalcapital.pack.database.serviceInterface.MyDataSourceFactoryService;
-import com.globalcapital.pack.model.User;
+import com.globalcapital.pack.schedule.cron.ScheduleCronTaskExecutorBatch;
+import com.globalcapital.pack.schedule.cron.ScheduleCronTaskExecutorReport;
 import com.globalcapital.pack.schedule.utility.ScheduleAutomationUtility;
 import com.globalcapital.pack.schedule.utility.ScheduleConstantClass;
 import com.globalcapital.utility.DateUtility;
@@ -55,6 +57,11 @@ public class LoginController {
 	ScheduleAutomationUtility scheduleAutomationUtilityReport = new ScheduleAutomationUtility("report");
 	// Load the batch Scheduler instance
 	ScheduleAutomationUtility scheduleAutomationUtilityBatch = new ScheduleAutomationUtility("batch");
+	@Autowired
+	public ScheduleCronTaskExecutorBatch scheduleCronTaskExecutorBtach;
+
+	@Autowired
+	public ScheduleCronTaskExecutorReport scheduleCronTaskExecutorReport;
 
 	public LoginController() {
 
@@ -70,7 +77,7 @@ public class LoginController {
 	@RequestMapping(value = "/registration", method = RequestMethod.GET)
 	public ModelAndView registration() {
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("/login/signup.html");
+		modelAndView.setViewName("signup.html");
 		return modelAndView;
 	}
 
@@ -85,13 +92,13 @@ public class LoginController {
 
 		for (Users user : H2DatabaseLuncher.getUsersList()) {
 			if (user.getUserName().equals(registrationBean.getUserName())) {
-				modelAndView.setViewName("/login/signup.html");
+				modelAndView.setViewName("signup.html");
 				return modelAndView;
-			} 
+			}
 		}
-		
+
 		if (registrationBean.getPassword().equals(registrationBean.getConfirmPassword())) {
-			
+
 			String sql = "insert into user values (user_seq.nextval, '" + registrationBean.getFirstName() + "', '"
 					+ registrationBean.getLastName() + "', '" + registrationBean.getUserName() + "','"
 					+ passwordEncoding.encoder(registrationBean.getConfirmPassword()) + "', 1)";
@@ -99,15 +106,17 @@ public class LoginController {
 			modelAndView.setViewName("/login");
 			return modelAndView;
 		}
-		
-		modelAndView.setViewName("/login/signup.html");
+
+		modelAndView.setViewName("signup.html");
 
 		return modelAndView;
 	}
 
 	@RequestMapping(value = "/admin/home", method = RequestMethod.GET)
 	public ModelAndView home(HttpServletRequest request, Model model)
-			throws SchedulerException, FileNotFoundException, IOException {
+			throws SchedulerException, FileNotFoundException, IOException, URISyntaxException {
+		scheduleCronTaskExecutorBtach.execute();
+		scheduleCronTaskExecutorReport.execute();
 		ModelAndView modelAndView = new ModelAndView();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Users user = H2DatabaseLuncher.getUserByUsername(auth.getName());
@@ -128,26 +137,26 @@ public class LoginController {
 		modelAndView.addObject("user", user);
 
 		modelAndView.addObject("adminMessage", MyDataSourceFactory.getRunningQuery());
-		modelAndView.setViewName("/login/index3.html");
+		modelAndView.setViewName("index3.html");
 		return modelAndView;
 	}
 
 	@RequestMapping(value = "/batchConfig", method = RequestMethod.GET)
-	public ModelAndView emailSConfig(HttpServletRequest request, Model model) throws SchedulerException {
+	public ModelAndView batchConfig(HttpServletRequest request, Model model) throws SchedulerException {
 		ModelAndView modelAndView = new ModelAndView();
 		List<BatchTypeBean> batchTypeList = H2DatabaseLuncher.getBatchType();
 		modelAndView.addObject("bean");
 		model.addAttribute("batchTypeList");
 		modelAndView.addObject("batchTypeList", batchTypeList);
 		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("batchReport"));
-		modelAndView.setViewName("/login/batchConfig.html");
+		modelAndView.setViewName("batchConfig.html");
 		return modelAndView;
 	}
 
 	@RequestMapping(value = "/emailConfig", method = RequestMethod.GET)
 	public ModelAndView emailConfig(HttpServletRequest request, Model model) throws SchedulerException {
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("/login/emailConfig.html");
+		modelAndView.setViewName("emailConfig.html");
 		return modelAndView;
 	}
 
@@ -165,9 +174,18 @@ public class LoginController {
 		ModelAndView modelAndView = new ModelAndView();
 		String sql = "insert into EMAIL_RECIPIENT values (email_seq.nextVal, '" + emailBean.getEmaillAddress() + "','"
 				+ emailBean.getFirstName() + " " + emailBean.getLastName() + "')";
-		;
+
+		for (EmailBean e : H2DatabaseLuncher.getRecipient()) {
+			if (e.getEmaillAddress().contains(emailBean.getEmaillAddress())) {
+
+				modelAndView.setViewName("emailConfig.html");
+
+				return modelAndView;
+			}
+
+		}
 		H2DatabaseLuncher.executeStatementInsertAndTruncate(sql);
-		modelAndView.setViewName("/login/emailConfig.html");
+		modelAndView.setViewName("emailConfig.html");
 
 		return modelAndView;
 	}
@@ -180,9 +198,9 @@ public class LoginController {
 
 		modelAndView.addObject("bean");
 		// model.addAttribute("reportTypeList");
-		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportReport"));
+		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportInstance"));
 		modelAndView.addObject("reportTypeList", reportTypeList);
-		modelAndView.setViewName("/login/reportConfig.html");
+		modelAndView.setViewName("reportConfig.html");
 		return modelAndView;
 	}
 
@@ -196,7 +214,7 @@ public class LoginController {
 
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("batchReport"));
-		modelAndView.setViewName("/login/batchConfig.html");
+		modelAndView.setViewName("batchConfig.html");
 
 		return modelAndView;
 	}
@@ -208,8 +226,8 @@ public class LoginController {
 
 		scheduleAutomationUtilityReport.pauseAlltriggers();
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportReport"));
-		modelAndView.setViewName("/login/reportConfig.html");
+		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportInstance"));
+		modelAndView.setViewName("reportConfig.html");
 		return modelAndView;
 	}
 
@@ -220,7 +238,7 @@ public class LoginController {
 		System.out.println("");
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("batchReport"));
-		modelAndView.setViewName("/login/batchConfig.html");
+		modelAndView.setViewName("batchConfig.html");
 
 		return modelAndView;
 	}
@@ -231,8 +249,8 @@ public class LoginController {
 		scheduleAutomationUtilityReport.resumeAllTriggers();
 		System.out.println("");
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportReport"));
-		modelAndView.setViewName("/login/reportConfig.html");
+		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportInstance"));
+		modelAndView.setViewName("reportConfig.html");
 		return modelAndView;
 	}
 
@@ -251,7 +269,7 @@ public class LoginController {
 
 		modelAndView.addObject("batchTypeList");
 		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("batchReport"));
-		modelAndView.setViewName("/login/batchConfig.html");
+		modelAndView.setViewName("batchConfig.html");
 		status.isComplete();
 		return modelAndView;
 	}
@@ -269,8 +287,8 @@ public class LoginController {
 		handleReplaceCronDateTime(dayMonth, Integer.valueOf(batchTypeSelector), calendarDate, "report");
 
 		modelAndView.addObject("reportTypeList");
-		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportReport"));
-		modelAndView.setViewName("/login/reportConfig.html");
+		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportInstance"));
+		modelAndView.setViewName("reportConfig.html");
 		status.isComplete();
 		return modelAndView;
 	}
@@ -301,7 +319,7 @@ public class LoginController {
 
 		}
 		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("batchReport"));
-		modelAndView.setViewName("/login/batchConfig.html");
+		modelAndView.setViewName("batchConfig.html");
 		return modelAndView;
 	}
 
@@ -325,8 +343,8 @@ public class LoginController {
 					.resumeSingleBatch(ScheduleConstantClass.resolveBatchCodeToBatchName(reportTypeSelector));
 
 		}
-		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportReport"));
-		modelAndView.setViewName("/login/reportConfig.html");
+		modelAndView.addObject("tableDataList", H2DatabaseLuncher.tableDataList("reportInstance"));
+		modelAndView.setViewName("reportConfig.html");
 		return modelAndView;
 	}
 
@@ -448,10 +466,10 @@ public class LoginController {
 		H2DatabaseLuncher.executeStatementInsertAndTruncate(sql);
 
 		ScheduleAutomationUtility scheduleAutomation = new ScheduleAutomationUtility(operationType);
-		Trigger Oldtrigger = scheduleAutomation
-				.getTriggerByJobGroupName(ScheduleConstantClass.resolveBatchCodeToBatchName(batchTypeId));
+		Trigger Oldtrigger = scheduleAutomation.getTriggerByJobGroupName(ScheduleConstantClass.resolveBatchCodeToBatchName(batchTypeId));
 		Scheduler scheduler = scheduleAutomation.getScheduleByInstanceName();
-		Trigger newTrigger = null;
+		Trigger newTrigger = null;  
+		
 		newTrigger = TriggerBuilder.newTrigger()
 				.withIdentity(Oldtrigger.getKey().getName(), Oldtrigger.getKey().getGroup())
 				.withSchedule(CronScheduleBuilder.cronSchedule(newTime).withMisfireHandlingInstructionDoNothing())

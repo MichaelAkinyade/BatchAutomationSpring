@@ -1104,9 +1104,9 @@ var Tweenable = (function () {
  * The above snippet will log something like this in the console:
  *
  *     translateX(60.3px)
- *     ...
+ *     
  *     translateX(76.05px)
- *     ...
+ *     
  *     translateX(90px)
  *
  * Another use for this is animating colors:
@@ -1123,9 +1123,9 @@ var Tweenable = (function () {
  * The above snippet will log something like this:
  *
  *     rgb(84,170,84)
- *     ...
+ *     
  *     rgb(170,84,170)
- *     ...
+ *     
  *     rgb(255,0,255)
  *
  * This extension also supports hexadecimal colors, in both long (`#ff00ff`)
@@ -1146,9 +1146,9 @@ var Tweenable = (function () {
  * equivalent values were supplied (just in hexadecimal form rather than RGB):
  *
  *     rgb(84,170,84)
- *     ...
+ *     
  *     rgb(170,84,170)
- *     ...
+ *     
  *     rgb(255,0,255)
  *
  * ## Easing support
@@ -1170,9 +1170,9 @@ var Tweenable = (function () {
  * The above snippet will create values like this:
  *
  *     translateX(11.56px) translateY(11.56px)
- *     ...
+ *     
  *     translateX(46.24px) translateY(46.24px)
- *     ...
+ *     
  *     translateX(100px) translateY(100px)
  *
  * In this case, the values for `translateX` and `translateY` are always the
@@ -1193,9 +1193,9 @@ var Tweenable = (function () {
  * The above snippet will create values like this:
  *
  *     translateX(10.89px) translateY(82.35px)
- *     ...
+ *     
  *     translateX(44.89px) translateY(86.73px)
- *     ...
+ *     
  *     translateX(100px) translateY(100px)
  *
  * `translateX` and `translateY` are not in sync anymore, because `easeInQuad`
@@ -1275,13 +1275,13 @@ var Tweenable = (function () {
       chunks = ['', ''];
 
       // If there is only one chunk, assume that the string is a number
-      // followed by a token...
+      // followed by a token
       // NOTE: This may be an unwise assumption.
     } else if (chunks.length === 1 ||
-      // ...or if the string starts with a number component (".", "-", or a
-      // digit)...
+      // or if the string starts with a number component (".", "-", or a
+      // digit)
     formattedString.charAt(0).match(R_NUMBER_COMPONENT)) {
-      // ...prepend an empty string here to make sure that the formatted number
+      // prepend an empty string here to make sure that the formatted number
       // is properly replaced by VALUE_PLACEHOLDER
       chunks.unshift('');
     }

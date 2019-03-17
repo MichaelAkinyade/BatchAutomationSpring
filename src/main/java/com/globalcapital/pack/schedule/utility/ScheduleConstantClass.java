@@ -52,51 +52,51 @@ public class ScheduleConstantClass {
 			break;
 
 		case autoFinanceBatchOne:
-			retVal = "autoFinanceBatchOne";
+			retVal = "autoFinancedBatchOneJob";
 			break;
 
 		case autoFinanceBatchTwo:
-			retVal = "autoFinanceBatchTwo";
+			retVal = "autofinacedBatchTwoJob";
 			break;
 
 		case genericFeesBatchOne:
-			retVal = "genericFeesBatchOne";
+			retVal = "genericBatchOne";
 			break;
 
 		case genericFeesBatchTwo:
-			retVal = "genericFeesBatchTwo";
+			retVal = "genericBatchTwo";
 			break;
 
 		case coverageBatchBatchOne:
-			retVal = "coverageBatchBatchOne";
+			retVal = "coverageChargeBatchOneJob";
 			break;
 
 		case coverageBatchBatchTwo:
-			retVal = "coverageBatchBatchTwo";
+			retVal = "coverageChargeBatchTwoJob";
 			break;
 
 		case reschedulingBatchOne:
-			retVal = "reschedulingBatchOne";
+			retVal = "reschdulingBatchTwoJob";
 			break;
 
 		case reschedulingBatchTwo:
-			retVal = "reschedulingBatch";
+			retVal = "reschedulingBatchOneJob";
 			break;
 
 		case issuingBatchOne:
-			retVal = "issuingBatchOne";
+			retVal = "issuingBatchOneJob";
 			break;
 
 		case issuingBatchTwo:
-			retVal = "issuingBatchTwo";
+			retVal = "issuingBatchTwoJob";
 			break;
 
 		case regularBatchOne:
-			retVal = "regularBatchOne";
+			retVal = "regularBatchOneJob";
 			break;
 
 		case regularBatchTwo:
-			retVal = "regularBatchTwo";
+			retVal = "regularBatchTwoJob";
 			break;
 
 		case acutrialWeekly:

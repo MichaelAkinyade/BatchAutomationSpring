@@ -1624,7 +1624,7 @@
         that.find('.js-load-item').hide();
         var load_btn = that.find('.js-load-btn');
         load_btn.on('click', function (e) {
-          $(this).text("Loading...").delay(1500).queue(function (next) {
+          $(this).text("Loading").delay(1500).queue(function (next) {
             $(this).hide();
             that.find(".js-load-item").fadeToggle("slow", 'swing');
           });

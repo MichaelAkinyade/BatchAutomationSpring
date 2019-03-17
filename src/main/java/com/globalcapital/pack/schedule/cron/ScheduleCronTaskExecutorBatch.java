@@ -3,6 +3,7 @@ package com.globalcapital.pack.schedule.cron;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 import org.quartz.CronScheduleBuilder;
@@ -15,7 +16,6 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.globalcapital.database.datasource.H2DatabaseLuncher;
@@ -38,51 +38,43 @@ import com.globalcapital.pack.schedule.batch.process.ReschedulingBatchRunTwo;
 @Service
 public class ScheduleCronTaskExecutorBatch {
 
-	public void execute() throws SchedulerException, IOException {
-		Resource res = new ClassPathResource("quartz.properties");
+	public void execute() throws SchedulerException, IOException, URISyntaxException {
 
-		FileInputStream in = new FileInputStream(res.getURI().getPath());
+		FileInputStream in = new FileInputStream("quartz.properties");
 		Properties props = new Properties();
 		props.load(in);
 		in.close();
-
 		StdSchedulerFactory schedFactory = new StdSchedulerFactory();
-
-		FileOutputStream out = new FileOutputStream(res.getURI().getPath());
+		FileOutputStream out = new FileOutputStream("quartz.properties");
 		props.setProperty("org.quartz.scheduler.instanceName", "batchReport");
 		props.setProperty("org.quartz.scheduler.instanceId", "batch419");
 		props.store(out, null);
+		out.close();
 		schedFactory.initialize(quartzProperties());
 
 		BatchTypeCronTimeBean batchTypeCronTime = H2DatabaseLuncher.getScheduleTime();
-
-		try {
-			System.out.println("**#################- Loaded Dummy Batch Into Cron -#################"); // DummyBatch
-																										// cron job
-			JobDetail dummyBatchJob = JobBuilder.newJob(DummyBatchProcess.class).withIdentity("dummyBatch", "group1")
-					.build();
-			Trigger dummyTrigger = TriggerBuilder.newTrigger().withIdentity("dummyTrigger1", "group1") // using dynamic
-																										// cron dates
-																										// fetched from
-																										// the Database
-					.withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.getDummyBatchTime())
-							.withMisfireHandlingInstructionDoNothing())
-					.build();
-			Scheduler scheduler1 = schedFactory.getScheduler();
-			scheduler1.start();
-			if (scheduler1.checkExists(dummyBatchJob.getKey())) {
-				scheduler1.rescheduleJob(dummyTrigger.getKey(), dummyTrigger);
-			} else {
-
-				scheduler1.scheduleJob(dummyBatchJob, dummyTrigger);
-			}
-
-		} catch (Exception e) {
-			System.out
-					.println("**#################- error in loading dummy batch process into cron --#################");
-
-			e.printStackTrace();
-		}
+		/*
+		 * try { System.out.
+		 * println("**#################- Loaded Dummy Batch Into Cron -#################"
+		 * ); // DummyBatch // cron job JobDetail dummyBatchJob =
+		 * JobBuilder.newJob(DummyBatchProcess.class).withIdentity("dummyBatch",
+		 * "group1") .build(); Trigger dummyTrigger =
+		 * TriggerBuilder.newTrigger().withIdentity("dummyTrigger1", "group1") // using
+		 * dynamic // cron dates // fetched from // the Database
+		 * .withSchedule(CronScheduleBuilder.cronSchedule(batchTypeCronTime.
+		 * getDummyBatchTime()) .withMisfireHandlingInstructionDoNothing()) .build();
+		 * Scheduler scheduler1 = schedFactory.getScheduler(); scheduler1.start(); if
+		 * (scheduler1.checkExists(dummyBatchJob.getKey())) {
+		 * scheduler1.rescheduleJob(dummyTrigger.getKey(), dummyTrigger); } else {
+		 * 
+		 * scheduler1.scheduleJob(dummyBatchJob, dummyTrigger); }
+		 * 
+		 * } catch (Exception e) { System.out
+		 * .println("**#################- error in loading dummy batch process into cron --#################"
+		 * );
+		 * 
+		 * e.printStackTrace(); }
+		 */
 
 		try {
 			System.out.println("**#################-Loaded Financial Batch Run One Into Cron#################");

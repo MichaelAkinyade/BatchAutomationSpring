@@ -30,7 +30,8 @@ public class H2DatabaseLuncher {
 
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "org.h2.Driver";
-	static final String DB_URL = "jdbc:h2:~/test";
+	//static final String DB_URL = "jdbc:h2:~/database/test";
+	static final String DB_URL = "jdbc:h2:file:/C:/database/test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;FILE_LOCK=NO";
 
 	// Database credentials
 	static final String USER = "sa";
@@ -46,7 +47,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
 			// STEP 3: Execute a query
@@ -106,7 +107,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
 			// STEP 3: Execute a query
@@ -153,7 +154,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
 			// STEP 3: Execute a query
@@ -269,7 +270,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println("");
@@ -325,7 +326,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println("");
@@ -342,7 +343,7 @@ public class H2DatabaseLuncher {
 				retVal.add(reportTypeBean);
 			}
 			rss.close();
-			System.out.println("H2 Batch Type Generated");
+			System.out.println("");
 
 			// STEP 4: Clean-up environment
 			stmt.close();
@@ -383,7 +384,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println("");
@@ -444,7 +445,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println("  ");
@@ -498,7 +499,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println("  ");
@@ -553,7 +554,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println(" getScheduleTimeList ");
@@ -660,7 +661,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println(" getScheduleTimeList ");
@@ -769,7 +770,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
 			// STEP 3: Execute a query
@@ -823,7 +824,7 @@ public class H2DatabaseLuncher {
 			Class.forName(JDBC_DRIVER);
 
 			// STEP 2: Open a connection
-			System.out.println("...");
+			System.out.println("");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			// STEP 3: Execute a query
 			System.out.println("");
