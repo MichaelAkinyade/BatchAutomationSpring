@@ -19,7 +19,6 @@ public class LoginApplication {
 
 	@Autowired
 	public ScheduleCronTaskExecutorReport scheduleCronTaskExecutorReport;
-
 	@Value("${solife.batch.console}")
 	private String props;
 

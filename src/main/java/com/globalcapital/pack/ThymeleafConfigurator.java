@@ -1,3 +1,6 @@
+/*@Author
+ * */
+
 package com.globalcapital.pack;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +25,7 @@ public class ThymeleafConfigurator {
 		emailTemplateResolver.setCharacterEncoding("UTF-8");
 		emailTemplateResolver.setOrder(0);
 		emailTemplateResolver.setCheckExistence(true);
-
 		return emailTemplateResolver;
-	}
+	}	
 	
 }

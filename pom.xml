@@ -102,11 +102,10 @@
 			</dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc7 -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc7</artifactId>
-			<version>12.1.0.2</version>
-		</dependency>
+		</dependency>    -->
 
 
 	</dependencies>
@@ -126,8 +125,6 @@
 							</goals>
 						</execution>
 					</executions>
-					<jvmArguments>-Xdebug
-						-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8005</jvmArguments>
 				</configuration>
 			</plugin>
 		</plugins>

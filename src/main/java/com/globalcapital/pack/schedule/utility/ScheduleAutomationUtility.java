@@ -246,7 +246,7 @@ public class ScheduleAutomationUtility {
 		Scheduler scheduler = getScheduleByInstanceName();
 		// Subtracting 1 because we have a dummy batch job group(group 1) used for test
 		// purpose and shldnt be removed from the code
-		retVal = scheduler.getJobGroupNames().size() - 1;
+		retVal = scheduler.getJobGroupNames().size();
 		if (retVal < 0) {
 			retVal = 0;
 		}

@@ -57,12 +57,7 @@ public class LoginController {
 	ScheduleAutomationUtility scheduleAutomationUtilityReport = new ScheduleAutomationUtility("report");
 	// Load the batch Scheduler instance
 	ScheduleAutomationUtility scheduleAutomationUtilityBatch = new ScheduleAutomationUtility("batch");
-	@Autowired
-	public ScheduleCronTaskExecutorBatch scheduleCronTaskExecutorBtach;
-
-	@Autowired
-	public ScheduleCronTaskExecutorReport scheduleCronTaskExecutorReport;
-
+	
 	public LoginController() {
 
 	}
@@ -115,8 +110,6 @@ public class LoginController {
 	@RequestMapping(value = "/admin/home", method = RequestMethod.GET)
 	public ModelAndView home(HttpServletRequest request, Model model)
 			throws SchedulerException, FileNotFoundException, IOException, URISyntaxException {
-		scheduleCronTaskExecutorBtach.execute();
-		scheduleCronTaskExecutorReport.execute();
 		ModelAndView modelAndView = new ModelAndView();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Users user = H2DatabaseLuncher.getUserByUsername(auth.getName());
